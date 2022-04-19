@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="/home/dschopper/repo/modeller/model.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<model>
+    <meta>
+        <title>Resource Inventory Model</title>
+        <contributor role="author">
+            <person ID="DS">
+                <name>Daniel Schopper</name>
+                <contact>daniel.schopper@oeaw.ac.at</contact>
+            </person>
+        </contributor>
+        <version>0.1</version>
+        <changelog>
+            <change status="draft" when="2022-04-13" who="DS"/>
+        </changelog>
+        <audience>INTERNAL</audience>
+    </meta>
+    <description>
+        <p>A draft model of the ACDH-CH Resource Inventory</p>
+    </description>
+    <classes>
+        
+      <!--  <class ID="Contribution" type="implicit">
+            <name>Contribution</name>
+            <definition></definition>
+            <properties>
+                <property ID="role">
+                    <arity>1</arity>
+                    <name>role</name>
+                    <datatypeRef target="term" vocabRef="vocabs.contributorRoles"/>
+                </property>
+            </properties>
+        </class>-->
+        
+        <class ID="Resource" type="abstract">
+            <name>Resource</name>
+            <definition>
+                <p>A digital resource; abstract super class for <className>Dataset</className>, <className>Service</className> or <className>Documentation</className>.</p>
+            </definition>
+            <properties>
+                <property ID="resource.name">
+                    <arity>1</arity>
+                    <name>Name</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+                <property ID="resource.description">
+                    <arity>0-1</arity>
+                    <name>Description</name>
+                    <datatypeRef target="longText"/>
+                </property>
+                <property ID="resource.pid">
+                    <arity>0-n</arity>
+                    <name>PID</name>
+                    <datatypeRef target="uri"/>
+                    <note>Any kind of persistent identifier</note>
+                </property>
+                <property ID="resource.status">
+                    <arity>1</arity>
+                    <name>Status</name>
+                    <datatypeRef target="vocabs.status"/>
+                </property>
+                <property ID="resource.type">
+                    <arity>1-n</arity>
+                    <name>Type</name>
+                    <datatypeRef target="vocabs.resourceTypes"/>
+                </property>
+            </properties>
+        </class>
+        
+        
+        <class ID="Collection" parent="Resource">
+            <name>Collection</name>
+            <definition>
+                <p>A set of data sets.</p>
+            </definition>
+        </class>
+        
+        <class ID="Format">
+            <name>Format</name>
+            <definition>any defnied format or standard</definition>
+        </class>
+        
+        <class ID="Software" parent="Resource">
+            <name>Software</name>
+            <definition>
+                <p>A software implementing a <className target="Process">Process</className>.</p>
+            </definition>
+        </class>
+        
+        
+        <class ID="Service" parent="Actor">
+            <name>Service</name>
+            <definition>
+                <p>An running instance of a piece of <className target="Software">software</className> provided by a server.</p>
+            </definition>
+            <properties>
+                <property ID="service.url">
+                    <arity>1-n</arity>
+                    <name>URI</name>
+                    <datatypeRef target="uri"/>
+                    <note><p>One or more URIs under which the Service is addressable.</p></note>
+                </property>
+                <property ID="service.status">
+                    <arity>1</arity>
+                    <name>Service Status</name>
+                    <datatypeRef target="term" vocabRef="vocabs.status"/>
+                </property>
+            </properties>
+            <mapping targetLanguage="Redmine">
+                <p><ref uri="https://redmine.acdh.oeaw.ac.at/issues?utf8=%E2%9C%93&amp;amp;set_filter=1&amp;sort=id%3Adesc&amp;f%5B%5D=status_id&amp;op%5Bstatus_id%5D=o&amp;f%5B%5D=tracker_id&amp;op%5Btracker_id%5D=%3D&amp;v%5Btracker_id%5D%5B%5D=7&amp;f%5B%5D=&amp;c%5B%5D=project&amp;c%5B%5D=tracker&amp;c%5B%5D=status&amp;c%5B%5D=priority&amp;c%5B%5D=subject&amp;c%5B%5D=assigned_to&amp;c%5B%5D=updated_on&amp;group_by=&amp;t%5B%5D=">issues of tracker Service</ref></p>
+            </mapping>
+        </class>
+        
+        <class ID="Dataset" parent="Resource">
+            <name>Data Set</name>
+            <definition>
+                <p>Any kind of digital asset in a database or file-based.</p>
+            </definition>
+        </class>
+        <class ID="Publication" parent="Resource">
+            <name>Publication</name>
+            <definition>
+                <p>Any kind of documentation, including best practice, learning resources jetc.</p>
+            </definition>
+        </class>
+        
+        <class ID="Project">
+            <name>Project</name>
+            <definition>
+                <p>A research project</p>
+            </definition>
+            <properties>
+                <property ID="externalIdentifier">
+                    <arity>0-n</arity>
+                    <name>external ID</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+            </properties>
+        </class>
+        <class ID="Actor" type="abstract">
+            <name>Actor</name>
+            <definition>Abstract superclass of "Person" or "Institution"</definition>
+        </class>
+        <class ID="Person" parent="Actor">
+            <name>Person</name>
+            <definition>A natural person</definition>
+        </class>
+        <class ID="Institution" parent="Actor">
+            <name>Institition</name>
+            <definition>An institution, corporate body or similar entity.</definition>
+        </class>
+        
+        <class ID="Instance">
+            <name>Instance</name>
+            <definition>an instance of a resource, e.g. one or several files, a table in a RDBMS</definition>
+            <properties>
+                <property ID="instance.function">
+                    <arity>1</arity>
+                    <name>Type</name>
+                    <datatypeRef target="term" vocabRef="vocabs.instanceRoles"/>
+                </property>
+            </properties>
+            <note>This is the set of <className target="File">Files</className> needed to reproduce a <className>Resource</className> fully or partiall.</note>
+        </class>
+        
+        <class ID="Carrier">
+            <name>Information Carrier</name>
+            <definition>any information carrier</definition>
+        </class>
+        
+        <class ID="File" parent="Instance">
+            <name>File</name>
+           <definition>a file on a carrier medium</definition>
+            <properties>
+                <property ID="File.dimensions">
+                    <arity>0-1</arity>
+                    <name>Dimensions</name>
+                    <datatypeRef target="integer"></datatypeRef>
+                    <note>in KB</note>
+                </property>
+            </properties>
+            <mapping targetLanguage="LRMoo" version="0.7">
+                <p></p>
+            </mapping>
+        </class>
+        
+        
+        <class ID="Process">
+            <name>Process</name>
+            <definition>A process / algorithm implemented</definition>
+            <properties>
+                <property ID="process.type">
+                    <arity>0-1</arity>
+                    <name>Process type</name>
+                    <datatypeRef target="term" vocabRef="vocabs.processTypes"/>
+                </property>
+            </properties>
+        </class>
+    </classes>
+    <groups>
+        <group ID="cris">
+            <name>CRIS</name>
+            <className target="Actor"/>
+            <className target="Project"/>
+            <className target="Institution"/>
+            <className target="Person"/>
+            <className target="Publication"/>
+        </group>
+        
+        <group ID="redmine">
+            <name>Redmine</name>
+            <className target="Service"/>
+        </group>
+    </groups>
+    <relations>
+        <!-- INSTITUTION RELATIONS -->
+        <relation ID="institutionHasMemberActor">
+            <sourceClass target="Institution">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Actor">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>has member</name>
+            <reverseName>is member of</reverseName>
+        </relation>
+        
+        <relation ID="institutionHostsProject">
+            <sourceClass target="Institution">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Project">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is hosting institution of</name>
+            <reverseName>has hosting institution</reverseName>
+        </relation>
+        
+        
+        <!-- ACTOR RELATIONS -->
+        <relation ID="personIsContributorTo" type="implicit">
+            <sourceClass target="Person">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is contributor to</name>
+            <reverseName>has contributorrole</reverseName>
+            <properties>
+                <property ID="personIsContributorTo.role">
+                    <arity>0-n</arity>
+                    <name>contribution role</name>
+                    <datatypeRef target="term" vocabRef="vocabs.contributorRoles"/>
+                </property>
+            </properties>
+        </relation>
+        
+        
+        <!-- PROJECT RELATIONS -->
+        <relation ID="projectProducesResource">
+            <sourceClass target="Project">
+                <arity>1</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>produces</name>
+            <reverseName>is output of</reverseName>
+        </relation>
+        
+        <relation ID="projectReusesResource">
+            <sourceClass target="Project">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>re-uses</name>
+            <reverseName>is re-used by</reverseName>
+        </relation>
+       <!-- 
+        <relation ID="actorHasMadeContribution">
+            <sourceClass target="Actor">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Contribution">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>actor has made Contribution to</name>
+            <reverseName>had contributors</reverseName>
+        </relation>
+        
+        <relation ID="contributionToProject">
+            <sourceClass target="Contribution">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Project">
+                <arity>1</arity>
+            </targetClass>
+            <name>contribution to</name>
+            <reverseName></reverseName>
+        </relation>
+        
+        
+        <relation ID="contributionToResource">
+            <sourceClass target="Contribution">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1</arity>
+            </targetClass>
+            <name>contribution to</name>
+            <reverseName></reverseName>
+        </relation>-->
+        
+        <relation ID="actorIsMemberOfProject" type="implicit">
+            <sourceClass target="Actor">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Project">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is member with role of</name>
+            <reverseName>has member with role</reverseName>
+            <properties>
+                <property ID="projectHasMember.role">
+                    <arity>1</arity>
+                    <name>role</name>
+                    <datatypeRef target="term" vocabRef="vocabs.projectRoles"/>
+                </property>
+            </properties>
+        </relation>
+        
+        
+        <relation ID="softwareIsInstatiatedIn">
+            <sourceClass target="Software">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Service">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is instantiated in</name>
+            <reverseName>runs</reverseName>
+        </relation>
+        
+        
+        <!-- Dataset relations -->
+        <relation ID="datasetIsPartOfCollection">
+            <sourceClass target="Dataset">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Collection">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is part of</name>
+            <reverseName>contains</reverseName>
+        </relation>
+        
+        <relation ID="instanceIsMadeUpOfFiles">
+            <sourceClass target="Instance">
+                <arity>1</arity>
+            </sourceClass>
+            <targetClass target="File">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is made up of</name>
+            <reverseName>is part of</reverseName>
+        </relation>
+        
+        <relation ID="instanceIsProvidedByService">
+            <sourceClass target="Instance">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Service">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is provided by</name>
+            <reverseName>provides</reverseName>
+        </relation>
+        
+        <relation ID="processProducesInstance">
+            <sourceClass target="Process">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Instance">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>produces</name>
+            <reverseName>produced by</reverseName>
+        </relation>
+        
+        <relation ID="instanceIsManifestationOfResource">
+            <sourceClass target="Instance">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1</arity>
+            </targetClass>
+            <name>is instantiation of</name>
+            <reverseName>is instantiated in</reverseName>
+        </relation>
+        
+        <relation ID="ResourceIsDocumentedIn">
+            <sourceClass target="Resource">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Publication">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is documented in</name>
+            <reverseName>documents</reverseName>
+        </relation>
+        
+        
+        <relation ID="fileHasFormat">
+            <sourceClass target="File">
+                <arity>1</arity>
+            </sourceClass>
+            <targetClass target="Format">
+                <arity>1</arity>
+            </targetClass>
+            <name>has format</name>
+            <reverseName>is used in</reverseName>
+        </relation>
+        
+        <relation ID="institutionFundsProject">
+            <sourceClass target="Institution">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Project">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is funder of</name>
+            <reverseName>is funded by</reverseName>
+        </relation>
+        
+        <relation ID="processExecutedBy">
+            <sourceClass target="Process">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Actor">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>executed by</name>
+            <reverseName>executes</reverseName>
+        </relation>
+        
+        <relation ID="resourceIsSuccessorOfResource">
+            <sourceClass target="Resource">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1</arity>
+            </targetClass>
+            <name>is successor of</name>
+            <reverseName>has successor</reverseName>
+            <note>establishes a chain of versions</note>
+        </relation>
+        
+        <relation ID="fileHasCarrier">
+            <sourceClass target="File">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Carrier">
+                <arity>1</arity>
+            </targetClass>
+            <name>has carrier</name>
+            <reverseName>carries</reverseName>
+        </relation>
+        
+        <relation ID="softwareImplementsProcess">
+            <sourceClass target="Software">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Process">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>implements</name>
+            <reverseName>is implemented in</reverseName>
+        </relation>
+    </relations>
+    
+    <vocabularies>
+        <vocab ID="vocabs.projectRoles">
+            <name>Roles of actors in a project</name>
+            <values>
+                <list>
+                    <item>PI</item>
+                    <item>project partner</item>
+                    <item>senior consultant</item>
+                    <item>team member</item>
+                    <item>SAB member</item>
+                </list>
+            </values>
+        </vocab>
+        <vocab ID="vocabs.access">
+            <name>access restrictions</name>
+            <values>
+                <list>
+                    <item></item>
+                </list>
+            </values>
+        </vocab>
+        <vocab ID="vocabs.licenses">
+            <name>license</name>
+            <values>
+                <list>
+                    <item>unlicensed</item>
+                    <item>CC BY 4.0</item>
+                    <item>CC BY SA 4.0</item>
+                    <item>CC BY SA NC 4.0</item>
+                    <item>CC 0</item>
+                    <item>Public Domain</item>
+                </list>
+            </values>
+        </vocab>
+        <vocab ID="vocabs.copyrightStatus">
+            <name>license</name>
+            <values>
+                <list>
+                    <item>unlicensed</item>
+                    <item>CC BY 4.0</item>
+                    <item>CC BY SA 4.0</item>
+                    <item>CC BY SA NC 4.0</item>
+                    <item>CC 0</item>
+                    <item>Public Domain</item>
+                </list>
+            </values>
+        </vocab>
+        <vocab ID="vocabs.processTypes">
+            <name>Process Types</name>
+            <values>
+                <list>
+                    <item>manual</item>
+                    <item>programmatic</item>
+                    <item>interactive</item>
+                </list>
+            </values>
+        </vocab>
+        <vocab ID="vocabs.status">
+            <name>Lifecycle Status</name>
+            <values>
+                <list>
+                    <item>planned</item>
+                    <item>in preparation</item>
+                    <item>in use internally</item>
+                    <item>published</item>
+                    <item>to be deprecated</item>
+                    <item>deprecated</item>
+                </list>
+            </values>
+        </vocab>
+        <vocab ID="vocabs.instanceRoles">
+            <name>Instance roles</name>
+            <values>
+                <list>
+                    <item>working copy</item>
+                    <item>temporary copy</item>
+                    <item>authoritative copy</item>
+                    <item>backup</item>
+                    <item>unknown</item>
+                </list>
+            </values>
+            <note>The role an instance plays in the lifecycle of a resource.</note>
+        </vocab>
+        <vocab ID="vocabs.resourceTypes">
+            <name>resource types</name>
+            <values>
+                <list>
+                    <item></item>
+                </list>
+            </values>
+            <note>The type of a resource.</note>
+        </vocab>
+        <vocab ID="vocabs.contributorRoles">
+            <name>contributor roles</name>
+            <values><p>Taken from <ref uri="https://www.loc.gov/marc/relators/relaterm.html">MARC Relators</ref>.</p></values>
+        </vocab>
+    </vocabularies>
+    <datatypes>
+        <datatype ID="shortText">
+            <name>Short Text</name>
+            <note>A string with less than 256 characters</note>
+        </datatype>
+        <datatype ID="longText">
+            <name>Long Text</name>
+            <note>A string with more than 256 characters</note>
+        </datatype>
+        <datatype ID="term">
+            <name>Vocab Term</name>
+            <note>A term from a controlled vocabulary.</note>
+        </datatype>
+        <datatype ID="uri">
+            <name>URI</name>
+            <note>any URI</note>
+        </datatype>
+        <datatype ID="integer">
+            <name>Integer</name>
+        </datatype>
+    </datatypes>
+</model>
