@@ -13,6 +13,11 @@ setup:
         - cd modeller
         - chmod u+x build.sh
         - ./build.sh -a setup
+    artifacts:
+      paths:
+        - "modeller"
+      untracked: false
+      expire_in: 30 days
 
 generate:
     needs:
