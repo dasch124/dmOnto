@@ -1,7 +1,6 @@
 image: fedora:latest
 
 stages:
-    - setup
     - build
     - deploy
 
@@ -13,18 +12,12 @@ setup:
         - cd modeller
         - chmod u+x build.sh
         - ./build.sh -a setup
+        - ./build.sh -i model.xml -a generateDocs -k -p showProperties=true
     artifacts:
       paths:
-        - "modeller"
+        - "."
       untracked: false
       expire_in: 30 days
-
-generate:
-    needs:
-      - setup
-    stage: build
-    script:
-        - ./modeller/build.sh -i model.xml -a generateDocs -k -p showProperties=true
 
 pages:
   needs:
