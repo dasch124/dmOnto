@@ -4,8 +4,8 @@ stages:
     - build
     - deploy
 
-setup:
-    stage: setup
+generate:
+    stage: build
     script:
         - sudo dnf -y install git
         - git clone https://github.com/dasch124/modeller
