@@ -8,6 +8,7 @@ stages:
 setup:
     stage: setup
     script:
+        - sudo dnf install git
         - git clone https://github.com/dasch124/modeller
         - cd modeller
         - chmod u+x build.sh
