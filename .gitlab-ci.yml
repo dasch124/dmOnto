@@ -1,0 +1,37 @@
+image: fedora:latest
+
+stages:
+    - setup
+    - build
+    - deploy
+
+setup:
+    stage: setup
+    script:
+        - git clone https://github.com/dasch124/modeller
+        - cd modeller
+        - chmod u+x build.sh
+        - ./build.sh -a setup
+
+generate:
+    needs:
+      - setup
+    stage: build
+    script:
+        - ./modeller/build.sh -i model.xml -a generateDocs -p showProperties=true
+
+pages:
+  needs:
+    - generate
+  stage: deploy
+  script:
+    - mv modelFull.xml.html index.html 
+    - mkdir .public
+    - cp -r *.html .public
+    - rm -rf public
+    - mv .public public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
