@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="/home/dschopper/repo/modeller/model.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<description>
+    <head>Purpose of a Resource Catalogue</head> 
+    
+    <p>In our day-to-day work in projects, we are creating or re-using a large variety of digital resources. In order to keep them organized, to ensure that we are able to find them when needed, and to keep track of the work and responsibilities on them, we need a Resource Catalogue: This catalogue should represent all key characteristics of a digital resource to help us understand how it is structured, who is/was working on it with which tools, following which workflow and so on. As such, the entries should be the main administrative handle for representing a resource in related areas like project administration, archiving and infrastructure provisioning / server administration.</p> 
+    
+    <p>We envision resource catalogues to be relevant on three levels:</p>  
+    
+    <list>
+        <item>On the basic level, each research project at ACDH-CH should have its own Project Resource Catalogue as part of its DMP. This catalogue should list all resources which are planned or actually created or re-used during the project, plus the processes and workflows which are needed to generate/curate/enrich … them. Being a structured side-kick of the project’s DMP, both the principle investigator and the project’s Data Officer are the main responsibles for ensuring the catalogue's completeness and accurateness.</item>
+        <item>On a higher level, we aim to establish the ACDH-CH Resource Catalogue which aggregates all Project Resource Catalogues into a common space. Not only do we envision this to become a  management tool which should help us improve data governance and resource planning, but  we also hope that such a tool will foster internal collaboration and stimulate re-use of existing datasets, models and workflows by making similar formats and workflows more visible. Ideally, the institute’s catalogue should feed a future ACDH-CH Dashboard</item>
+        <item>Finally, ideally, such a Resource Catalogue would be adopted universally within the Academy. and  correspondingly also feed the Academy Knowledge Portal.</item>
+    </list>   
+    
+    <p>This relates to several other components or activities on the institutional/academy level</p> 
+    
+    <list>
+        <item>The Data Inventory Survey (Datenbestandserhebung) has shown the need for structured digital asset management across the humanities institutes of the Academy. The results of Datenbestandserhebung will feed into the data catalogue specification and will be a first use case for it.</item>
+        <item>Academy Knowledge Portal is a planned integrative/ed discovery solution for the research outputs of the Academy, for which a comprehensive overview of existing datasets on the institutional level is a necessary precondition  </item>
+        <item>AkademIS – the CRIS of the Academy. [To be explored: What is the current practice and coverage with respect to describing datasets as research outputs and what are the possibilities for integration and reuse.] </item>
+    </list> 
+    
+    <head>Stakeholders and interests</head>
+    <list>
+        <item>Data Curators and developers in a project: ease communication about / planning /exchange of data</item> 
+        
+        <item>TF Preservation: streamline deposition process by collecting crucial aspects as structured information early on in a project – ideally source final ARCHE metadata from the Data Catalogue; help planning of human and technical resources needed for archiving (when will project x finish, how much material will have to be archived, which formats etc.)</item>  
+        
+        <item>Technical Supervisors: make sure data and processes are properly documented; overview of formats / volumes; support infrastructure provisioning (server space)</item> 
+        
+        <item>PI + ACDH-CH Project Management: structured planning of resources; keep track of the deliverables in a project / progress on the ways towards them; ensure that processes are properly documented </item>
+        
+        <item>DSIE: ease communication in the team; share knowledge; re-use of tools and processes</item> 
+        
+        <item>BOD, institutional Quality Assurance: reporting, overview of data produced at the institute – visibility of data to the institution </item>
+    </list>
+    
+    <head>Example questions to be answered by the catalogue</head>         
+    
+    <list>
+        <item>Which datasets will be / are being / have been produced in a project?</item>  
+        <item>Where, i.e. on which storage location(s), can they be found? </item>
+        <item>Which are IPR-sensitive datasets?</item> 
+        <item>Who is working on a dataset with which tools?</item> 
+        <item>Who can work with / access  a dataset?</item> 
+        <item>Who is responsible for a given dataset?</item> 
+        <item>What is the status of a given dataset? Is it actively developed or used or has development/use stalled? Can it be discarded?</item> 
+        <item>Can I reuse the data of project y for my project ?</item> 
+        <item>I also have data in format F and need it to convert to format V – how was this solved in this project and can I re-use the script? </item>
+        <item>What's the overall size of data in project Y? What is it expected to be at the end?</item>  
+        <item>How do the files in a github repository relate to the data I see in the public web application at … ?</item> 
+        <item>How do the files in a dataset relate to each other? Which one is temporary, which one is a working copy, which one is authoritative output?</item>  
+        <item>Is that actual data valid against the specifications set out by the model and the format? (e.g. AAC: each text must have a corresponding directory with page images; XML schema conformance; CIDOC conformity in Open Atlas) </item>
+        <item>How much additional space is needed in the coming year, by all projects combined?</item> 
+        <item>Which project is using how much storage space (and what type)? </item>
+    </list>
+    
+    <head>Implementation notes</head>
+    <p>Obviously, the usefulness of such a catalogue will depend on the amount and accuratness of the information in it. A hybrid curation strategy seems advisable to ensure that:</p>
+    <list>
+        <item>Collecting information on the "lowest level" in the model is rather straightforward: A script can count files and their properties (file type, dimension, ownership etc.) on a network drive or in a git repository as well as numbers on tables/rows in a relational database.</item>
+        <item></item>
+    </list>
+</description>
+

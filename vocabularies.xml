@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="/home/dschopper/repo/modeller/model.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<vocabularies>
+    <vocab ID="vocabs.mimetypes">
+        <name>MIME Type Vocabulary</name>
+        <values><p>This vocabulary consists of all valid MIME Types, e.g. taken from the <ref uri="https://www.dni.gov/index.php/who-we-are/organizations/ic-cio/ic-cio-related-menus/ic-cio-related-links/ic-technical-specifications/media-type-controlled-vocabulary">Media Type Controlled Vocabulary</ref>.</p></values>
+    </vocab>
+    <vocab ID="vocabs.projectRoles">
+        <name>Project Roles Vocabulary</name>
+        <values>
+            <list>
+                <item>PI</item>
+                <item>project partner</item>
+                <item>senior consultant</item>
+                <item>team member</item>
+                <item>SAB member</item>
+                <item>funder</item>
+            </list>
+        </values>
+    </vocab>
+    <vocab ID="vocabs.accessRestrictions">
+        <name>Access Restrictions Vocabulary</name>                
+        <values>
+            <list>
+                <item>public access</item>
+                <item>acadmic access</item>
+                <item>external access</item>
+                <item>institution-wide access</item>
+                <item>institute-wide access</item>
+                <item>group-wide access</item>
+                <item>user-specific access</item>
+            </list>
+        </values>
+        <note>Defines who should have access to the resource. Depending on the location of the resource a script should be able to </note> 
+    </vocab>
+    <vocab ID="vocabs.licenses">
+        <name>ARCHE Licenses Vocabulary</name>
+        <values>
+            <list>
+                <item>unlicensed</item>
+                <item>CC BY 4.0</item>
+                <item>CC BY SA 4.0</item>
+                <item>CC BY SA NC 4.0</item>
+                <item>CC 0</item>
+                <item>Public Domain</item>
+            </list>
+        </values>
+        <note>The ARCHE vocabulary will need to be extended by some terms.</note>
+    </vocab>
+    <vocab ID="vocabs.processExecutionTypes">
+        <name>Process Types Vocabulary</name>
+        <values>
+            <list>
+                <item>manual</item>
+                <item>programmatic</item>
+                <item>interactive</item>
+            </list>
+        </values>
+    </vocab>
+    
+    <vocab ID="vocabs.resourceStatus">
+        <name>ARCHE Lifecycle Status Vocabulary</name>
+        <values>
+            <list>
+                <item>planned</item>
+                <item>in preparation</item>
+                <item>in use internally</item>
+                <item>published</item>
+                <item>to be deprecated</item>
+                <item>deprecated</item>
+            </list>
+        </values>
+        <note>
+            <p>The <ref uri="https://vocabs.acdh.oeaw.ac.at/arche_lifecycle_status">ARCHE life cycle status vocabulary</ref> will need to be extended by some terms.</p>
+            <p>In case a resource has status="published", there should be at least one resourceInstance with role "authoritative copy".</p>
+        </note>
+    </vocab>
+    
+    <vocab ID="vocabs.archeSubjects">
+        <name>ARCHE Subjects Vocabulary</name>
+        <values><p>Values are taken from the ARCHE Subjects Vocabulary</p></values>
+        <TODO status="pending" who="DS" when="2022-04-25"><p>This is being prepared based on the current data present in ARCHE.</p></TODO>
+    </vocab>
+    
+    <vocab ID="vocabs.language">
+        <name>ISO Language Codes</name>
+        <note><ref uri="https://vocabs.acdh.oeaw.ac.at/iso639-1/en/">ISO 639-1 Language Codes on ACDH-CH Vocabs</ref></note>
+    </vocab>
+    
+    <vocab ID="vocabs.softwareType">
+        <name>Software Type Vocabulary</name>
+        <values>
+            <list>
+                <item>Tagger</item>
+                <item>NE Recognizer</item>
+                <item>Editor</item>
+                <item>Server</item>
+                <item>Relational Database</item>
+                <item>…</item>
+            </list>
+        </values>
+        <note>Specifies the type of the software being described.</note>
+        <TODO who="DS" when="2022-04-25" status="new">Research existing vocabularies, e.g. from CLARIN or DARIAH.</TODO>
+    </vocab>
+    <vocab ID="vocabs.serviceStatus">
+        <name>Service Status Vocabulary</name>
+        <values><p>This equals to the Redmine Service issue status field options.</p></values>
+    </vocab>
+    <vocab ID="vocabs.instanceRoles">
+        <name>Instance Roles Vocabulary</name>
+        <values>
+            <list>
+                <item>working copy</item>
+                <item>temporary copy</item>
+                <item>authoritative copy</item>
+                <item>SIP</item>
+                <item>AIP</item>
+                <item>backup</item>
+                <item>unknown</item>
+            </list>
+        </values>
+        <note>The role an instance plays in the lifecycle of a resource.</note>
+    </vocab>
+    <vocab ID="vocabs.resourceInstancePartTypes">
+        <name>Instance Part Types Vocabulary</name>
+        <values>
+            <list>
+                <item>file</item>
+                <item>document</item>
+                <description><p>an XML document (which might be stored in a file but also elswhere, e.g. as a document node in an XML database.)</p></description>
+                <item>database</item>
+                <item>database table</item>
+                <item>database row</item>
+                <item>database record</item>
+            </list>
+        </values>
+    </vocab>
+    <vocab ID="vocabs.resourceTypes">
+        <name>Resource Types Vocabulary</name>
+        <values>
+            <list>
+                <item></item>
+            </list>
+        </values>
+        <note>The type of a resource.</note>
+    </vocab>
+    <vocab ID="vocabs.contributorRoles">
+        <name>Vontributor Role Vocabulary</name>
+        <note><p>Values should be taken from <ref uri="https://www.loc.gov/marc/relators/relaterm.html">MARC Code List for Relators</ref>.</p></note>
+    </vocab>
+    <vocab ID="vocabs.dimensionPrecision">
+        <name>Dimension Precision Vocabulary</name>
+        <values>
+            <list>
+                <item>exact</item>
+                <item>estimated</item>
+            </list>
+        </values>
+    </vocab>
+    <vocab ID="vocabs.units">
+        <name>Units Vocabulary</name>
+        <values>
+            <list>
+                <item>cm</item>
+                <item>mm</item>
+                <item>in</item>
+                <item>lines of text</item>
+                <item>folio</item>
+                <item>characters</item>
+                <item>tokens</item>
+                <item>kilobyte</item>
+                <item>gigabyte</item>
+            </list>
+        </values>
+    </vocab>
+    <vocab ID="vocabs.resourceInstanceCompleteness">
+        <name>Resource Instance completness Vocabulary</name>
+        <values>
+            <list>
+                <item>complete</item>
+                <description><p>the instance is a complete representation of the resource.</p></description>
+                <item>fragmentary</item>
+                <description><p>The resourceInstance contains only some fragments of a resource.</p></description>
+                <item>supernumerary</item>
+                <description><p>The resourceInstance is a complete representation of the resource but also inclues redundant data (e.g. temorary working data).</p></description>
+                <item>component</item>
+                <description><p>The resourceInstance represents one logical part of a resource which is in itself complete. (E.g. all scanned images of a book; one complete issue in a newspaper corpus.)</p></description>
+            </list>
+        </values>
+    </vocab>
+    <vocab ID="vocabs.tadirahActivities">
+        <name>TaDiRAH</name>
+        <values><p>Any concept from the <ref uri="https://vocabs.dariah.eu/tadirah/en/">Taxonomy of Digital Research Activities in the Humanities</ref></p></values>
+    </vocab>
+    <vocab ID="vocabs.carrierTypes">
+        <name>Carrier Types Vocabulary</name>
+        <values>
+            <list>
+                <item>Network drive</item>
+                <item>local HDD</item>
+                <item>local SSD</item>
+                <item>external HDD</item>
+                <item>external SSD</item>
+                <item>CD-ROM</item>
+                <item>DVD-ROM</item>
+                <item>Tape</item>
+            </list>
+        </values>
+    </vocab>
+</vocabularies>

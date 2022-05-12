@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="/home/dschopper/repo/modeller/model.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<model>
+<model xmlns:xi="http://www.w3.org/2001/XInclude">
     <meta>
         <title>Resource Inventory Model</title>
         <contributor role="author">
@@ -9,15 +9,23 @@
                 <contact>daniel.schopper@oeaw.ac.at</contact>
             </person>
         </contributor>
-        <version>0.1</version>
+        <version>0.2</version>
         <changelog>
             <change status="draft" when="2022-04-13" who="DS"/>
+    	    <change status="draft" when="2022-04-24" who="DS">finishing major rework. The list of classes should be rather stable for the first review round. Bumping version number to 0.2</change>
         </changelog>
         <audience>INTERNAL</audience>
+        <namespaces>
+            <namespace prefix="arche"></namespace>
+            <namespace prefix="oav">http://lod.openaire.eu/vocab/</namespace>
+        </namespaces>
+        <TODO who="DS" when="2022-04-25" status="new">
+            <list>
+                <item>Define a balance between explicit entity relations and / or generic ones with role vocabularies.</item>
+            </list>
+        </TODO>
     </meta>
-    <description>
-        <p>A draft model of the ACDH-CH Resource Inventory</p>
-    </description>
+   <xi:include href="description.xml"/>
     <classes>
         
       <!--  <class ID="Contribution" type="implicit">
@@ -32,19 +40,23 @@
             </properties>
         </class>-->
         
+  
         <class ID="Resource" type="abstract">
             <name>Resource</name>
             <definition>
-                <p>A digital resource; abstract super class for <className>Dataset</className>, <className>Service</className> or <className>Documentation</className>.</p>
+                <p>The abstract notion of any kind of digital resource managed in the Resource Catalogue. This is an abstract helper class serving as the parent class for <className target="Dataset">Data set</className>, <className>Software</className> and <className>Publication</className>. meaning that only subclasses of it should be instantiated in the actual data.</p>
             </definition>
             <properties>
                 <property ID="resource.name">
                     <arity>1</arity>
                     <name>Name</name>
                     <datatypeRef target="shortText"/>
+                    <mapping targetLanguage="OpenAIRELOD_Ontology_1.1">
+                        <className uri="">oav:title</className>
+                    </mapping>
                 </property>
                 <property ID="resource.description">
-                    <arity>0-1</arity>
+                    <arity>1</arity>
                     <name>Description</name>
                     <datatypeRef target="longText"/>
                 </property>
@@ -57,27 +69,77 @@
                 <property ID="resource.status">
                     <arity>1</arity>
                     <name>Status</name>
-                    <datatypeRef target="vocabs.status"/>
+                    <datatypeRef target="term" vocabRef="vocabs.resourceStatus"/>
                 </property>
                 <property ID="resource.type">
                     <arity>1-n</arity>
                     <name>Type</name>
-                    <datatypeRef target="vocabs.resourceTypes"/>
+                    <datatypeRef target="term" vocabRef="vocabs.resourceTypes"/>
+                </property>
+                <property ID="resource.accessRestrictions">
+                    <arity>1</arity>
+                    <name>Access Restrictions</name>
+                    <datatypeRef target="term" vocabRef="vocabs.accessRestrictions"/>
+                    <note>This property is global to all "incarnations" of a resource.</note>
+                </property>
+                <property ID="resource.license">
+                    <arity>1</arity>
+                    <name>License</name>
+                    <datatypeRef target="term" vocabRef="vocabs.licenses"/>
+                    <note>This property is the global default to all "incarnations" associated with that resource. In case a resource instance is licensed under different conditions, then it should have its own <propName target="resourceInstance.license">property</propName>.</note>
+                </property>
+                <property ID="resource.subject">
+                    <arity>0-n</arity>
+                    <name>Subject</name>
+                    <datatypeRef target="term" vocabRef="vocabs.archeSubjects"/>
                 </property>
             </properties>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
+                <className>Result</className>
+                <CHECKME who="DS" when="2022-04-22" status="new">OARG defines a class "Other research product": <i>The class of Results Other Research Products includes any research output that is not literature, data, or software. Examples include, but are not limited to: algorithms, scientific workflows/pipelines, protocols, standard operating procedure (SOP), simulations, mathematical and statistical models, but also research packages</i>. It might be worth considering such a fourth subclass as well.</CHECKME> </mapping>
+            <mapping targetLanguage="OpenAIRELOD_Ontology_1.1">
+                <className uri="http://lod.openaire.eu/vocab#terms-ResultEntity">oav:ResultEntity</className>
+            </mapping>
         </class>
         
         
-        <class ID="Collection" parent="Resource">
+        <class ID="Collection" parent="ResourceInstancePart">
             <name>Collection</name>
             <definition>
-                <p>A set of data sets.</p>
+                <p>A group of <className target="ResourceInstancePart">Resource Instance Parts</className> (e.g. files) which are in some way related one to another. A collection may or may not be serialized as a directory in a file system.</p>
             </definition>
+            <examples>
+                <example>
+                    <p>A corpus is made up of 5 texts, each encoded as one TEI document and serialized to a file in a directory. Each document is the result of three subsequent processing steps (e.g. tokenization, POS-Tagging, lemmatization) which all place their output in the same directory, making it a total of 5 x 4 files (source file + 3 process output files per text). In order to address the files output by each step as a group, they can be modelled as collection being the result of a process: <className>process</className> <relName target="processProducesInstancePart">produces</relName> a <className target="Collection">collection of resource parts</className>; <className></className>.</p>
+                </example>
+            </examples>
+            <mapping targetLanguage="ARCHEOntology_3.1" version="3.1">
+                <className>arche:Collection</className>
+            </mapping>
         </class>
         
         <class ID="Format">
             <name>Format</name>
-            <definition>any defnied format or standard</definition>
+            <definition>a defnied format or standard</definition>
+            <properties>
+                <property ID="format.mimetype">
+                    <arity>0-n</arity>
+                    <name>Mime Type</name>
+                    <datatypeRef target="term" vocabRef="vocabs.mimetypes"/>
+                </property>
+                <property ID="format.pronomID">
+                    <arity>0-1</arity>
+                    <name>PRONOM Unique Identifier</name>
+                    <datatypeRef target="shortText"/>
+                    <note>The unique identifier in the <ref uri="http://www.nationalarchives.gov.uk/pronom/">PRONOM database of file formats</ref>.</note>
+                </property>
+                <property ID="format.shortName">
+                    <arity>1</arity>
+                    <name>Name</name>
+                    <datatypeRef target="shortText"/>
+                    <note>A short denomination for the Format in question.</note>
+                </property>
+            </properties>
         </class>
         
         <class ID="Software" parent="Resource">
@@ -85,43 +147,86 @@
             <definition>
                 <p>A software implementing a <className target="Process">Process</className>.</p>
             </definition>
+            <properties>
+                <property ID="software.type">
+                    <arity>1-n</arity>
+                    <name></name>
+                    <datatypeRef target="term" vocabRef="software.type"/>
+                    <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
+                        <className>oav:SoftwareType</className>
+                    </mapping>
+                </property>
+                
+            </properties>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
+                <className>oav:Software</className>
+            </mapping>
+        </class>
+        
+        
+        <class ID="Computer">
+            <name>Computer</name>
+            <definition>Any computer, be it a physical server, a virtual machine in the cloud or a local PC.</definition>
+            <properties>
+                <property ID="server.name">
+                    <arity>1</arity>
+                    <name>Server Name</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+                <property ID="server.ip">
+                    <arity>0-n</arity>
+                    <name>IP Address</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+            </properties>
         </class>
         
         
         <class ID="Service" parent="Actor">
             <name>Service</name>
             <definition>
-                <p>An running instance of a piece of <className target="Software">software</className> provided by a server.</p>
+                <p>A a piece of <className target="Software">software</className> running on a <className>computer</className>, usually a server accessible over the internet.</p>
             </definition>
             <properties>
-                <property ID="service.url">
-                    <arity>1-n</arity>
+                <property ID="service.uri">
+                    <arity>0-n</arity>
                     <name>URI</name>
                     <datatypeRef target="uri"/>
-                    <note><p>One or more URIs under which the Service is addressable.</p></note>
+                    <note><p>One or more URIs under which the service is addressable. In case this is running on a Server, this should be mandatory.</p></note>
                 </property>
                 <property ID="service.status">
                     <arity>1</arity>
                     <name>Service Status</name>
-                    <datatypeRef target="term" vocabRef="vocabs.status"/>
+                    <datatypeRef target="term" vocabRef="vocabs.serviceStatus"/>
+                    <note></note>
+                </property>
+                <property ID="service.accessRestrictions">
+                    <arity>1</arity>
+                    <name>Access Restrictions</name>
+                    <datatypeRef target="term" vocabRef="vocabs.accessRestrictions"/>
+                    <note>Defines who should have access to a resource as a whole or a specific manifestation of it as raw data or inside an application. Thus, this property occurs on several levels in the model which should be interpreted as a cascading rule: </note>
                 </property>
             </properties>
-            <mapping targetLanguage="Redmine">
-                <p><ref uri="https://redmine.acdh.oeaw.ac.at/issues?utf8=%E2%9C%93&amp;amp;set_filter=1&amp;sort=id%3Adesc&amp;f%5B%5D=status_id&amp;op%5Bstatus_id%5D=o&amp;f%5B%5D=tracker_id&amp;op%5Btracker_id%5D=%3D&amp;v%5Btracker_id%5D%5B%5D=7&amp;f%5B%5D=&amp;c%5B%5D=project&amp;c%5B%5D=tracker&amp;c%5B%5D=status&amp;c%5B%5D=priority&amp;c%5B%5D=subject&amp;c%5B%5D=assigned_to&amp;c%5B%5D=updated_on&amp;group_by=&amp;t%5B%5D=">issues of tracker Service</ref></p>
-            </mapping>
         </class>
         
         <class ID="Dataset" parent="Resource">
             <name>Data Set</name>
             <definition>
-                <p>Any kind of digital asset in a database or file-based.</p>
+                <p>A set of structured or semistructured data.</p>
             </definition>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
+                <className>Datasets</className>
+            </mapping>
         </class>
+        
         <class ID="Publication" parent="Resource">
             <name>Publication</name>
             <definition>
-                <p>Any kind of documentation, including best practice, learning resources jetc.</p>
+                <p>Any kind of written material, including informal documentation, including best practice, learning resources etc.</p>
             </definition>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
+                <className>Literature</className>
+            </mapping>
         </class>
         
         <class ID="Project">
@@ -130,7 +235,7 @@
                 <p>A research project</p>
             </definition>
             <properties>
-                <property ID="externalIdentifier">
+                <property ID="project.externalIdentifier">
                     <arity>0-n</arity>
                     <name>external ID</name>
                     <datatypeRef target="shortText"/>
@@ -140,66 +245,207 @@
         <class ID="Actor" type="abstract">
             <name>Actor</name>
             <definition>Abstract superclass of "Person" or "Institution"</definition>
+            <properties>
+                <property ID="actor.name">
+                    <arity>0-n</arity>
+                    <name>Name</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+            </properties>
+            <mapping targetLanguage="OpenAIRELOD_Ontology_1.1">
+                <CHECKME who="DS" when="2022-04-25" status="new">No explicit Actor class?</CHECKME>
+            </mapping>
         </class>
         <class ID="Person" parent="Actor">
             <name>Person</name>
             <definition>A natural person</definition>
+            <properties>
+                <property ID="person.orcid">
+                    <arity>1</arity>
+                    <name>ORCID</name>
+                    <datatypeRef target="uri"/>
+                    <note>A URI from the https://orcid.org/ namespace</note>
+                </property>
+            </properties>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
+                <datatypeName>Person</datatypeName>
+                <note>The model in version 1.3 "Person" is a so-called "Structured Type"; a Core entity "Person" is listed under "future extensions to the data model"</note>
+            </mapping>
+        </class>
+        
+        <class ID="Metadata" parent="ResourceInstancePart">
+            <name>Metadata</name>
+            <definition>An external metadata record of the resource in question.</definition>
+            <properties>
+                <property ID="metadata.name">
+                    <arity>1</arity>
+                    <name>Metadata name</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+                <property ID="metadata.location">
+                    <arity>0-n</arity>
+                    <name>Location</name>
+                    <datatypeRef target="uri"/>
+                </property>
+            </properties>
         </class>
         <class ID="Institution" parent="Actor">
             <name>Institition</name>
-            <definition>An institution, corporate body or similar entity.</definition>
+            <definition>An institution, corporate body or organization of any size or legal type.</definition>
+            <properties>
+                <property ID="institution.rorid">
+                    <arity>1</arity>
+                    <name>ROR ID</name>
+                    <datatypeRef target="uri"/>
+                    <note>A URI from the https://ror.org/ namespace</note>
+                </property>
+            </properties>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
+                <className>Organization</className>
+                <note>The OpenAIRE model also proposes a <className>funder</className> class. Since an institution like ÖAW acts both as a funder and as a host it seems more advisable to keep the class generic and attach this kind of information to a property of each respective project.</note>
+                <note>In the OpenAIRE Research Graph Data Model this class does not have a superclass.</note>
+            </mapping>
         </class>
         
-        <class ID="Instance">
-            <name>Instance</name>
-            <definition>an instance of a resource, e.g. one or several files, a table in a RDBMS</definition>
+        <class ID="ResourceInstance">
+            <name>Resource Instance</name>
+            <definition>A container object describing a materialized <className target="Resource">resource</className> which is made of one or several <className target="ResourceInstancePart">Resource Instance Parts</className> with actual data, representing the whole resource or only a fragment of it. In case of a publication resource, this might be one document file with embedded data (e.g. as PDF, EPUB) or a set of files making up a complete HTML website. in case of <className target="Software">software</className> this is a copy of the application code e.g. in a version control repository. In the case of a <className target="Dataset">data set</className> resource this might be one or several files on a network drive or one table in a RDBMS.</definition>
+            <examples>
+                <example><p>These would count for three distinct resource instances of the <instanceName classRef="Dataset">issue number 124 of the Wiener Zeitung from June 2nd, 1909</instanceName>:</p>
+                    <list>
+                        <item>the <relName target="resourceInstanceIsAuthoritativeInstanceOfResource">representative</relName> resource instance <relName target="instanceIsMadeUpOfResourceInstanceParts">is made up of</relName> <instanceName classRef="ResourceInstancePart">451 TIFF files</instanceName> serving as the <instanceName classRef="Collection">master images of a scanned manuscript</instanceName> and one <instanceName classRef="ResourceInstancePart">TEI document</instanceName> containing the full-text transcription  file stored on a network share. Since the TEI document  references the image files, their functionality to the user dependents on their presence – thus both are parts of the same resource instance.</item>
+                        <item>The <instanceName classRef="ResourceInstance">JPEG2000 versions</instanceName> of <instanceName  classRef="ResourceInstancePart">the 451 images</instanceName> residing on the <instanceName classRef="Carrier">local hard disk drive</instanceName> of a <instanceName classRef="Service">IIIF server</instanceName>.</item>
+                        <item>A <instanceName classRef="ResourceInstancePart">copy of the TEI transriptions indexed as document nodes</instanceName> in an eXistdb instance which are dynamically converted into IIIF manifests by XQuery script <instanceName classRef="Software">tei2iif.xquery</instanceName>.</item>
+                    </list></example>
+            </examples>
             <properties>
-                <property ID="instance.function">
+                <property ID="resourceInstance.accessPoint">
+                    <arity>1-n</arity>
+                    <name>Resource Instance Access Point</name>
+                    <datatypeRef target="uri"/>
+                    <note>One or several URIs where a user can start accessing the actual data of the resource instance. In case of a resource instance organized in flat files, this might be a file:-scheme URI pointing to an index document or the directory containing the relevant files; in the case the resource instance is stored in some kind of database management system (RDBMS etc,) providing some kind of logical access path on top of the actual data storage layer, this might be a <ref uri="https://github.com/libwww-perl/uri-db">custom URI scheme</ref> pointing to a database or a query inside of it.</note>
+                </property>
+                <property ID="resourceInstance.license">
+                    <arity>0-1</arity>
+                    <name>Resource Instance License</name>
+                    <datatypeRef target="term" vocabRef="vocabs.licenses"/>
+                    <note>This is overriding the parent's resource <propName target="resourceInstance.license">license property</propName>.</note>
+                </property>
+                <property ID="resourceInstance.function">
                     <arity>1</arity>
                     <name>Type</name>
                     <datatypeRef target="term" vocabRef="vocabs.instanceRoles"/>
                 </property>
+                <property ID="resourceInstance.completeness">
+                    <arity>1</arity>
+                    <name>Completness</name>
+                    <datatypeRef target="term" vocabRef="vocabs.resourceInstanceCompleteness"/>
+                </property>
             </properties>
-            <note>This is the set of <className target="File">Files</className> needed to reproduce a <className>Resource</className> fully or partiall.</note>
+            <note>
+                <p>A resourceInstance is </p>
+                <p>In case a resource instance is stored as flat files use <className>Resource</className> <relName target="instanceIsMadeUpOfResourceInstanceParts">is made up of (is part of)</relName> <className>Resource Instance Parts</className>.</p>
+                <p>In case a use <className>Resource</className> <relName target="serviceProvidesInstanceOfResource">is provided by (provides)</relName> <className>Service</className></p>
+                <p>If it is important to document the actual storage location of a resource instance even if it is accessed via a <className>Service</className>, use both. – E.g. in case of a http server, files are uploaded via SFTP to the local hard disk and served by the service ot the public.</p>
+                <p>If it is needed to express the inner logics of a <className>resource instance</className>, use <className target="Collection">Collections</className> which group together files into a logical structure (irrespective of the way / location they are stored).</p>
+            </note>
+            <CHECKME who="DS" when="2022-04-23" status="new">How about introducing an entity class "AccessPoint" or the like which allows to provide some explicit context to the different URLs etc via which a resource can be accessed? (e.g. internally used url, upload via SFTP etc.)</CHECKME>
+            <mapping targetLanguage="ARCHEOntology_3.1" version="3.1">
+                <className>arche:Colletion</className>
+            </mapping>
         </class>
         
         <class ID="Carrier">
             <name>Information Carrier</name>
-            <definition>any information carrier</definition>
-        </class>
-        
-        <class ID="File" parent="Instance">
-            <name>File</name>
-           <definition>a file on a carrier medium</definition>
+            <definition>A physical storage (or some abstraction of it) transmitting as the medium of making a conceptual object.</definition>
+            <examples>
+                <example>The hard disk drive in my computer.</example>
+                <example>A medieval codex</example>
+                <example>A CD-ROM on a book shelf</example>
+                <example>A network share</example>
+            </examples>
             <properties>
-                <property ID="File.dimensions">
-                    <arity>0-1</arity>
-                    <name>Dimensions</name>
-                    <datatypeRef target="integer"></datatypeRef>
-                    <note>in KB</note>
+                <property ID="carrier.name">
+                    <arity>1</arity>
+                    <name>Carrier name</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+                <property ID="carrier.type">
+                    <arity>1</arity>
+                    <name>Carrier Type</name>
+                    <datatypeRef target="term" vocabRef="vocabs.carrierTypes"/>
                 </property>
             </properties>
-            <mapping targetLanguage="LRMoo" version="0.7">
-                <p></p>
-            </mapping>
+        </class>
+        
+        <class ID="ResourceInstancePart">
+            <name>Resource Instance Part</name>
+           <definition>Some binary or textual data which is treated as an atomic unit being a building block of a resource instance. Depending on the level of abstraction of the underlying architecture this can be: 
+               <list>
+                   <item>a file</item>
+                   <item>a table in a relational database (which in itself is "made up" by rows and fields but )</item>
+                   <item>a document node in case of a XML or JSON document stored in a NoSQL database</item>
+               </list>
+           </definition>
+            <properties>
+                <property ID="ResourceInstancePart.location">
+                    <arity>0-1</arity>
+                    <name>location</name>
+                    <datatypeRef target="uri"/>
+                    <note>the path to the resource part (e.g. file system path); see comment on <propName target="resourceInstance.accessPoint">accessPoint</propName> property of <className target="ResourceInstance">Resource Instance</className>.</note>
+                </property>
+                <property ID="resourceInstancePart.extent">
+                    <arity>0-n</arity>
+                    <name>extent</name>
+                    <datatypeRef target="dimension"/>
+                </property>
+            </properties>
+            <!--<mapping targetLanguage="LRMoo" version="0.7">
+                <className>lrmo</className>
+            </mapping>-->
         </class>
         
         
         <class ID="Process">
             <name>Process</name>
-            <definition>A process / algorithm implemented</definition>
+            <definition>This class comprises any planned or actual activity which changes the state of a <className target="ResourceInstancePart">resource instance</className> or some of its parts, usually taking some input and transforming it to a output. Thus class comprises both the abstract notion of a process plan (heuristics, algorithms, instructions etc.) as well as their actual execution by an <className target="Actor">Actor</className>.</definition>
+            <examples>
+                <example>Encoding a handwritten letter in TEI-XML.</example>
+                <example>Processing the source data of this model with a script which produces a HTML view of it.</example>
+                <example>Applying a chain of NLP tools on source files of a newspaper corpus.</example>
+                <example>The Levenstein distance algorithm. Usually this be executed programmatically when running a software implementing it; it could theoretically also be executed manually by using it as a step-by-step instruction.</example>
+            </examples>
             <properties>
-                <property ID="process.type">
+                <property ID="process.name">
+                    <arity>1</arity>
+                    <name>Name</name>
+                    <datatypeRef target="shortText"/>
+                </property>
+                <property ID="process.executionType">
                     <arity>0-1</arity>
-                    <name>Process type</name>
-                    <datatypeRef target="term" vocabRef="vocabs.processTypes"/>
+                    <name>Execution type</name>
+                    <datatypeRef target="term" vocabRef="vocabs.processExecutionTypes"/>
+                </property>
+                <property ID="process.activityType">
+                    <arity>0-n</arity>
+                    <name>Activity Type</name>
+                    <datatypeRef target="term" vocabRef="vocabs.tadirahActivities"/>
                 </property>
             </properties>
+            <note>
+                <p>It is up to the user to decide to which granularity she wants to model the internals of a proces. Usually, a process will be something simple like "running script x" without providing information on its internal structure.</p>
+            </note>
+            <TODO who="DS" when="2022-04-22" status="new">Add concrete usage guidelines and examples.</TODO>
+            <CHECKME who="DS" when="2022-04-22" status="new">this is very vague, but probably nothing more specific is needed in the context of this model</CHECKME>
         </class>
+        
     </classes>
     <groups>
         <group ID="cris">
             <name>CRIS</name>
+            <description>
+                <p>Information on this classes are sourced from ÖAW's future CRIS / successor of "AkademIS".</p>
+            </description>
             <className target="Actor"/>
             <className target="Project"/>
             <className target="Institution"/>
@@ -209,7 +455,12 @@
         
         <group ID="redmine">
             <name>Redmine</name>
+            <description>
+                <p>Information on this classes are sourced from ACDH-CH's project management system "Redmine".</p>
+            </description>
             <className target="Service"/>
+            <className target="Computer"/>
+            <className target="Resource"/>
         </group>
     </groups>
     <relations>
@@ -238,22 +489,42 @@
         
         
         <!-- ACTOR RELATIONS -->
-        <relation ID="personIsContributorTo" type="implicit">
+        <relation ID="personIsAssociatedWithResource">
             <sourceClass target="Person">
-                <arity>1-n</arity>
+                <arity>0-n</arity>
             </sourceClass>
             <targetClass target="Resource">
                 <arity>0-n</arity>
             </targetClass>
-            <name>is contributor to</name>
-            <reverseName>has contributorrole</reverseName>
+            <name>is associated with</name>
+            <reverseName>has associated person</reverseName>
+            <note>
+                <p>This is a catch-all relation between a resource and natural persons relevant for its creation, existance, maintenance in any way. The type of role a person plays for a resource is provided by the <propName target="personIsAssociatedWithResource.role">contribution role</propName> property.</p>
+                <p>More granular information on the nature of the contribution can be added via <className>Actor</className> <relName target="actorExecutesProcess">executes</relName> <className>Process</className> producing <className target="ResourceInstancePart">Resource Instance</className> which <relName target="resourceInstanceIsManifestationOfResource">is instantiation</relName> of <className>Resource</className>.</p>
+                <p>A note on the arity: While we <i>should</i> know at least a principal of a resource who is in charge of it, it might well be that we don't have this information.</p>
+            </note>
+            <examples>
+                <example><p><instanceName classRef="Person">Charly Mörth</instanceName> <relName target="personIsAssociatedWithResource">is associated with</relName> <instanceName classRef="Resource">VICAV</instanceName> as its <vocabName target="vocabs.contributorRoles">lead</vocabName>.</p></example>
+            </examples>
             <properties>
-                <property ID="personIsContributorTo.role">
+                <property ID="personIsAssociatedWithResource.role">
                     <arity>0-n</arity>
                     <name>contribution role</name>
                     <datatypeRef target="term" vocabRef="vocabs.contributorRoles"/>
                 </property>
             </properties>
+        </relation>
+        
+        <relation ID="actorIsOwnerOfResource">
+            <sourceClass target="Actor">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is owner of</name>
+            <reverseName>is owned by</reverseName>
+            <note>This is a mandatory shortcut for <className>Actor</className> <relName target="personIsAssociatedWithResource">is associated with role</relName> <vocabName target="vocabs.contributorRoles">owner</vocabName> with <className>Resource</className>.</note>
         </relation>
         
         
@@ -269,7 +540,7 @@
             <reverseName>is output of</reverseName>
         </relation>
         
-        <relation ID="projectReusesResource">
+        <relation ID="projectReusesResource" status="under_review">
             <sourceClass target="Project">
                 <arity>1-n</arity>
             </sourceClass>
@@ -278,8 +549,54 @@
             </targetClass>
             <name>re-uses</name>
             <reverseName>is re-used by</reverseName>
+            <CHECKME who="DS" when="2022-04-25" status="new"><p>Unclear whether we want to have this on the project level. We might assume that any relevant re-use in a project manifest itself in some kind of <className>Resource</className> so it would be better to make the relation on a more granular level. OTOH it might be difficult to gain such knowledge when external projects re-use data of the ACDH-CH.</p></CHECKME>
         </relation>
-       <!-- 
+        
+        <relation ID="resourceReusesResource" type="implicit">
+            <sourceClass target="Resource">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>re-uses</name>
+            <reverseName>is re-used by</reverseName>
+            <note><p>This is a general relation between two resource instances indicating that the target resource was used while creating the source resource. It is deliberately kept on the Resource level to allow to model cross-class re-use relations between its subclasses (e.g. publication re-uses a dataset, a dataset re-uses a software etc.).</p>
+            <p>This is a shortcut for Resource is related to resource with rrle "reuses"</p></note>
+            <properties>
+                <property ID="resourceReusesResource.description">
+                    <arity>0-1</arity>
+                    <name>Resource Re-use Description</name>
+                    <datatypeRef target="longText"/>
+                    <note>provides details on the re-use.</note>
+                </property>
+            </properties>
+        </relation>
+        
+        <relation ID="resourceIsRelatedToResource">
+            <sourceClass target="Resource">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is related to with role</name>
+            <reverseName>is related to with role</reverseName>
+            <note>This is a general relation between two resource instances indicating that both resources are related in some way which is expressed via the <propName>resourceRelatesToResource.role</propName> property. It is deliberately kept on the Resource level to allow to model cross-class re-use relations between its subclasses (e.g. publication re-uses a dataset, a dataset re-uses a software etc.).</note>
+            <properties>
+                <property ID="resourceRelatesToResource.role">
+                    <arity>0-1</arity>
+                    <name></name>
+                    <datatypeRef target="longText"/>
+                    <note>provides details on the re-use.</note>
+                </property>
+            </properties>
+        </relation>
+        
+        
+        
+       <!--
+            
         <relation ID="actorHasMadeContribution">
             <sourceClass target="Actor">
                 <arity>1-n</arity>
@@ -314,7 +631,7 @@
             <reverseName></reverseName>
         </relation>-->
         
-        <relation ID="actorIsMemberOfProject" type="implicit">
+        <relation ID="actorIsMemberOfProject">
             <sourceClass target="Actor">
                 <arity>1-n</arity>
             </sourceClass>
@@ -325,7 +642,7 @@
             <reverseName>has member with role</reverseName>
             <properties>
                 <property ID="projectHasMember.role">
-                    <arity>1</arity>
+                    <arity>1-n</arity>
                     <name>role</name>
                     <datatypeRef target="term" vocabRef="vocabs.projectRoles"/>
                 </property>
@@ -333,20 +650,24 @@
         </relation>
         
         
-        <relation ID="softwareIsInstatiatedIn">
-            <sourceClass target="Software">
-                <arity>1-n</arity>
-            </sourceClass>
-            <targetClass target="Service">
+        <relation ID="serviceProvidesInstanceOfSoftware">
+            <sourceClass target="Service">
                 <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Software">
+                <arity>1-n</arity>
             </targetClass>
-            <name>is instantiated in</name>
-            <reverseName>runs</reverseName>
+            <name>provides instance of</name>
+            <reverseName>is instantiated in</reverseName>
+            <definition><p>Expresses that a service provides the functionality of one, potentially several, software implementations.</p></definition>
+            <examples>
+                <example><p>Service <instanceName classRef="Service">PMB</instanceName> is <relName target="serviceProvidesInstanceOfSoftware">running</relName> <instanceName classRef="Software">APIS</instanceName> <relName target="serviceProvidesInstanceOfResource">providing an instance of</relName> the <instanceName classRef="Resource">APIS Dataset</instanceName>.</p></example>
+            </examples>
         </relation>
         
         
         <!-- Dataset relations -->
-        <relation ID="datasetIsPartOfCollection">
+        <!--<relation ID="datasetIsPartOfCollection">
             <sourceClass target="Dataset">
                 <arity>0-n</arity>
             </sourceClass>
@@ -355,43 +676,108 @@
             </targetClass>
             <name>is part of</name>
             <reverseName>contains</reverseName>
-        </relation>
+        </relation>-->
         
-        <relation ID="instanceIsMadeUpOfFiles">
-            <sourceClass target="Instance">
+        <relation ID="instanceIsMadeUpOfResourceInstanceParts">
+            <sourceClass target="ResourceInstance">
                 <arity>1</arity>
             </sourceClass>
-            <targetClass target="File">
+            <targetClass target="ResourceInstancePart">
                 <arity>1-n</arity>
             </targetClass>
             <name>is made up of</name>
             <reverseName>is part of</reverseName>
         </relation>
-        
-        <relation ID="instanceIsProvidedByService">
-            <sourceClass target="Instance">
-                <arity>0-n</arity>
-            </sourceClass>
-            <targetClass target="Service">
+
+        <relation ID="resourceInstancePartIsPartOfCollection">
+            <sourceClass target="ResourceInstancePart">
                 <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Collection">
+                <arity>0-n</arity>
             </targetClass>
-            <name>is provided by</name>
-            <reverseName>provides</reverseName>
+            <name>is part of</name>
+            <reverseName>consists of</reverseName>
+        </relation>
+
+        <relation ID="serviceProvidesInstanceOfResource">
+            <sourceClass target="Service">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="ResourceInstance">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>provides</name>
+            <reverseName>is provided by</reverseName>
         </relation>
         
-        <relation ID="processProducesInstance">
+        <relation ID="processUsesInstancePart">
             <sourceClass target="Process">
                 <arity>1-n</arity>
             </sourceClass>
-            <targetClass target="Instance">
+            <targetClass target="ResourceInstancePart">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>uses</name>
+            <reverseName>is used by</reverseName>
+        </relation>
+        
+        <relation ID="processProducesInstancePart">
+            <sourceClass target="Process">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="ResourceInstancePart">
                 <arity>0-n</arity>
             </targetClass>
             <name>produces</name>
             <reverseName>produced by</reverseName>
         </relation>
         
-        <relation ID="instanceIsManifestationOfResource">
-            <sourceClass target="Instance">
+        <relation ID="processIsSubprocessOfProcess">
+            <sourceClass target="Process">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Process">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is subprocess of</name>
+            <reverseName>has subprocess</reverseName>
+            <definition>This relation splits a more complicated process into smaller units.</definition>
+            <examples>
+                <example><p><instanceName classRef="Process">Cooking a soup</instanceName>, an <vocabName target="vocabs.processExecutionTypes">interactive</vocabName> <propName target="process.executionType">type of process</propName>, <relName target="processIsSubprocessOfProcess">has the parts</relName> <list>
+                    <item><instanceName classRef="Process">washing vegetables</instanceName></item>
+                    <item><instanceName classRef="Process">cutting vegetables</instanceName></item>
+                    <item><instanceName classRef="Process">setting up water in a pot</instanceName></item>
+                    <item><instanceName classRef="Process">turning on the oven</instanceName></item>
+                    <item><instanceName classRef="Process">putting vegetables in the pot</instanceName></item>
+                    <item><instanceName classRef="Process">letting vegetables cook in the boiling water</instanceName></item>
+                    <item><instanceName classRef="Process">adding spices</instanceName></item> 
+                    <item><instanceName classRef="Process">blending the vegetables</instanceName></item>
+                    <item><instanceName classRef="Process">filling the soup in a plate.</instanceName></item>
+                </list></p></example> 
+            </examples>
+        </relation>
+               
+        
+        <relation ID="processIsSuccessorOfProcess">
+            <sourceClass target="Process">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Process">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is successor of</name>
+            <reverseName>has successor</reverseName>
+            <definition>This relation creates a sequence / chain of processes, either independed ones or subprocesses of one meta-process.</definition>
+            <examples>
+                <example><instanceName classRef="Process">Transcribing</instanceName> consists in </example>
+            </examples>
+        </relation>
+        
+        
+    
+        <relation ID="resourceInstanceIsManifestationOfResource">
+            <sourceClass target="ResourceInstance">
                 <arity>1-n</arity>
             </sourceClass>
             <targetClass target="Resource">
@@ -401,20 +787,72 @@
             <reverseName>is instantiated in</reverseName>
         </relation>
         
-        <relation ID="ResourceIsDocumentedIn">
-            <sourceClass target="Resource">
-                <arity>1-n</arity>
+        <relation ID="resourceInstanceIsAuthoritativeInstanceOfResource">
+            <sourceClass target="ResourceInstance">
+                <arity>1</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1</arity>
+            </targetClass>
+            <name>is authoritative instantiation of</name>
+            <reverseName>has authoritative instantiation</reverseName>
+            <note>This relation identifies exactly one resource instance which is the authoritative version of a <className>resource</className>. Depending on the <propName target="resource.status">resource's lifecycle status</propName> this can mean different things:
+            <list>
+                <item>if resource is "</item>
+            </list></note>
+        </relation>
+        
+        <relation ID="softwareIsDocumentedInPublication">
+            <sourceClass target="Software">
+                <arity>0-n</arity>
             </sourceClass>
             <targetClass target="Publication">
-                <arity>1-n</arity>
+                <arity>0-n</arity>
             </targetClass>
             <name>is documented in</name>
             <reverseName>documents</reverseName>
         </relation>
         
         
+        
+        <relation ID="projectIsDocumentedInPublication">
+            <sourceClass target="Project">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Publication">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is documented in</name>
+            <reverseName>documents</reverseName>
+        </relation>
+        
+        
+        <relation ID="processIsDocumentedInPublication">
+            <sourceClass target="Process">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Publication">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is documented in</name>
+            <reverseName>documents</reverseName>
+        </relation>
+        
+        
+        
+        <relation ID="DatasetIsDocumentedInPublication">
+            <sourceClass target="Dataset">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Publication">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is documented in</name>
+            <reverseName>documents</reverseName>
+        </relation>
+        
         <relation ID="fileHasFormat">
-            <sourceClass target="File">
+            <sourceClass target="ResourceInstancePart">
                 <arity>1</arity>
             </sourceClass>
             <targetClass target="Format">
@@ -424,7 +862,7 @@
             <reverseName>is used in</reverseName>
         </relation>
         
-        <relation ID="institutionFundsProject">
+        <relation ID="institutionFundsProject" type="implicit">
             <sourceClass target="Institution">
                 <arity>1-n</arity>
             </sourceClass>
@@ -433,25 +871,86 @@
             </targetClass>
             <name>is funder of</name>
             <reverseName>is funded by</reverseName>
+            <note>This is a shortcut for <className>Institution</className> <relName target="actorIsMemberOfProject">is member of</relName> <className>project</className> with <vocabName target="vocabs.projectRoles">role="funder"</vocabName></note>
         </relation>
         
-        <relation ID="processExecutedBy">
-            <sourceClass target="Process">
+        
+        <relation ID="institutionIsPartOfInstitution">
+            <sourceClass target="Institution">
                 <arity>1-n</arity>
             </sourceClass>
-            <targetClass target="Actor">
+            <targetClass target="Institution">
                 <arity>1-n</arity>
             </targetClass>
-            <name>executed by</name>
-            <reverseName>executes</reverseName>
+            <name>is collection of</name>
+            <reverseName>has collection</reverseName>
+            <note>Institution can have further defined parts (institutes, etc.); mostly we use this to model library Collections via <propName target="institution.type">the type property</propName> of the collection-institution.</note>
         </relation>
         
-        <relation ID="resourceIsSuccessorOfResource">
-            <sourceClass target="Resource">
+        <relation ID="actorExecutesProcess">
+            <sourceClass target="Actor">
                 <arity>1-n</arity>
             </sourceClass>
-            <targetClass target="Resource">
-                <arity>1</arity>
+            <targetClass target="Process">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>executes</name>
+            <reverseName>executed by</reverseName>
+            <examples>
+                <example><p><instanceName classRef="Software">Tesseract</instanceName> <relName target="actorExecutesProcess">running on</relName> <instanceName classRef="Computer">my local PC</instanceName> <relName target="processProducesInstancePart">outputting</relName> the file <instanceName classRef="ResourceInstancePart">output.txt</instanceName> <relName target="fileHasFormat">of type</relName> <instanceName classRef="Format">plain text</instanceName> residing on <instanceName classRef="Carrier">my local PC's SDD</instanceName> is a <className target="Process">process</className> <propName target="process.executionType">of type</propName> <vocabName target="vocabs.processExecutionTypes">"programmatic"</vocabName>.</p></example>
+                <!--<example>
+                    <p><instanceName classRef="Person">A student assistant</instanceName> <relName target="act">correcting</relName> the output of an OCR engine is executing a manual process.</p>
+                </example>
+                <p>A curator correcting errors in ARCHE metadata of a collection and validating the results iteratively is executing an interactive process.</p>-->
+            </examples>
+        </relation>
+        
+        <relation ID="softwareIsSuccessorOfsoftware">
+            <sourceClass target="Software">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Software">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is successor of</name>
+            <reverseName>has successor</reverseName>
+        </relation>
+        
+        <relation ID="softwareHasDependencySoftware">
+            <sourceClass target="Software">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Software">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>has dependency</name>
+            <reverseName>is dependency of</reverseName>
+            <note>used to model software dependency graphs</note>
+            <examples>
+                <example>
+<p><instanceName classRef="Software">TEI_publisher</instanceName> <instanceName target="softwareHasDependencySoftware">has dependency</instanceName> <instanceName classRef="Software">eXistdb</instanceName> <instanceName target="softwareHasDependencySoftware">has dependency</instanceName> <instanceName classRef="Software">Java</instanceName></p>
+                </example>
+            </examples>
+        </relation>
+        
+        <relation ID="publicationIsSuccessorOfPublication">
+            <sourceClass target="Publication">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Publication">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is successor of</name>
+            <reverseName>has successor</reverseName>
+            <note>establishes a chain of versions</note>
+        </relation>
+        
+        <relation ID="datasetIsSuccessorOfdataset">
+            <sourceClass target="Dataset">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Dataset">
+                <arity>1-n</arity>
             </targetClass>
             <name>is successor of</name>
             <reverseName>has successor</reverseName>
@@ -459,7 +958,7 @@
         </relation>
         
         <relation ID="fileHasCarrier">
-            <sourceClass target="File">
+            <sourceClass target="ResourceInstancePart">
                 <arity>1-n</arity>
             </sourceClass>
             <targetClass target="Carrier">
@@ -479,105 +978,98 @@
             <name>implements</name>
             <reverseName>is implemented in</reverseName>
         </relation>
+        
+        <relation ID="softwareHasMaintainer">
+            <sourceClass target="Software">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Person">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>has Maintainer</name>
+            <reverseName>is maintainer of</reverseName>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3" level="narrower">
+                <className>oav:ContactPerson</className>
+            </mapping>
+        </relation>
+        
+        <relation ID="personCreatorOfResource" parent="personIsAssociatedWithResource">
+            <sourceClass target="Person">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Resource">
+                <arity>1-n</arity>
+            </targetClass>
+            <name>is creator of</name>
+            <reverseName>created by</reverseName>
+            <note>This is the most general </note>
+            <mapping targetLanguage="OpenAIRELOD_Ontology_1.1">
+                <className>oav:creator</className>
+                <note>This property undocumented in the ontology but de facto exists in the OpenAIRE triple store where it is a string datatype property.</note>
+            </mapping>
+            <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3">
+                <datatypeName>Creator</datatypeName>
+                <note>"The Creator types describes a Person that is the creator of a Result and has a specific ranking, in order of importance."</note>
+            </mapping>
+        </relation>
+        
+        <relation ID="resourceHasMetadata">
+            <sourceClass target="Resource">
+                <arity>1</arity>
+            </sourceClass>
+            <targetClass target="Metadata">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>is described in</name>
+            <reverseName>describes</reverseName>
+        </relation>
+        
+        <relation ID="serviceHasResponsiblePerson" type="implicit">
+            <sourceClass target="Service">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Person">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>has responsible</name>
+            <reverseName>is responsible for</reverseName>
+            <note>This is a shortcut for Service hasContributor with Role Person</note>
+        </relation>
+        
+        <relation ID="serviceIsRunningOnServer">
+            <sourceClass target="Service">
+                <arity>1-n</arity>
+            </sourceClass>
+            <targetClass target="Computer">
+                <arity>0-1</arity>
+            </targetClass>
+            <name>is running on</name>
+            <reverseName>hosts</reverseName>
+        </relation>
+        
+        <relation ID="softwareHasInputFormat">
+            <sourceClass target="Software">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Format">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>consumes data of format</name>
+            <reverseName>is input format of</reverseName>
+        </relation>
+        
+        <relation ID="softwareHasOutputFormat">
+            <sourceClass target="Software">
+                <arity>0-n</arity>
+            </sourceClass>
+            <targetClass target="Format">
+                <arity>0-n</arity>
+            </targetClass>
+            <name>produces data of format</name>
+            <reverseName>is output format of</reverseName>
+        </relation>
     </relations>
-    
-    <vocabularies>
-        <vocab ID="vocabs.projectRoles">
-            <name>Roles of actors in a project</name>
-            <values>
-                <list>
-                    <item>PI</item>
-                    <item>project partner</item>
-                    <item>senior consultant</item>
-                    <item>team member</item>
-                    <item>SAB member</item>
-                </list>
-            </values>
-        </vocab>
-        <vocab ID="vocabs.access">
-            <name>access restrictions</name>
-            <values>
-                <list>
-                    <item></item>
-                </list>
-            </values>
-        </vocab>
-        <vocab ID="vocabs.licenses">
-            <name>license</name>
-            <values>
-                <list>
-                    <item>unlicensed</item>
-                    <item>CC BY 4.0</item>
-                    <item>CC BY SA 4.0</item>
-                    <item>CC BY SA NC 4.0</item>
-                    <item>CC 0</item>
-                    <item>Public Domain</item>
-                </list>
-            </values>
-        </vocab>
-        <vocab ID="vocabs.copyrightStatus">
-            <name>license</name>
-            <values>
-                <list>
-                    <item>unlicensed</item>
-                    <item>CC BY 4.0</item>
-                    <item>CC BY SA 4.0</item>
-                    <item>CC BY SA NC 4.0</item>
-                    <item>CC 0</item>
-                    <item>Public Domain</item>
-                </list>
-            </values>
-        </vocab>
-        <vocab ID="vocabs.processTypes">
-            <name>Process Types</name>
-            <values>
-                <list>
-                    <item>manual</item>
-                    <item>programmatic</item>
-                    <item>interactive</item>
-                </list>
-            </values>
-        </vocab>
-        <vocab ID="vocabs.status">
-            <name>Lifecycle Status</name>
-            <values>
-                <list>
-                    <item>planned</item>
-                    <item>in preparation</item>
-                    <item>in use internally</item>
-                    <item>published</item>
-                    <item>to be deprecated</item>
-                    <item>deprecated</item>
-                </list>
-            </values>
-        </vocab>
-        <vocab ID="vocabs.instanceRoles">
-            <name>Instance roles</name>
-            <values>
-                <list>
-                    <item>working copy</item>
-                    <item>temporary copy</item>
-                    <item>authoritative copy</item>
-                    <item>backup</item>
-                    <item>unknown</item>
-                </list>
-            </values>
-            <note>The role an instance plays in the lifecycle of a resource.</note>
-        </vocab>
-        <vocab ID="vocabs.resourceTypes">
-            <name>resource types</name>
-            <values>
-                <list>
-                    <item></item>
-                </list>
-            </values>
-            <note>The type of a resource.</note>
-        </vocab>
-        <vocab ID="vocabs.contributorRoles">
-            <name>contributor roles</name>
-            <values><p>Taken from <ref uri="https://www.loc.gov/marc/relators/relaterm.html">MARC Relators</ref>.</p></values>
-        </vocab>
-    </vocabularies>
+    <xi:include href="vocabularies.xml"/> 
     <datatypes>
         <datatype ID="shortText">
             <name>Short Text</name>
@@ -598,5 +1090,31 @@
         <datatype ID="integer">
             <name>Integer</name>
         </datatype>
+        <datatype ID="dimension">
+            <name>Dimension</name>
+            <note>
+                <p>a complex datatype describing the extent of a <className target="ResourceInstancePart">Resource Instance Part</className> by three dimensions:</p> 
+                <p><list>
+                    <item>unit: the <vocabName target="vocabs.units">unit of measurement</vocabName> (e.g. kilobytes, files, rows etc.)</item>
+                    <item>quantity: the amount of measurement units as an integer value</item>
+                    <item>precision: the precision of measurement expressed as a <vocabName target="vocabs.dimensionPrecision">controlled vocabulary</vocabName></item>
+                </list></p>
+            </note>
+            <CHECKME who="DS" when="2022-04-24" status="new">This could (probably should) be made a class on its own right, although it seems a bit weired giving some measurement instance the status of an "identity".</CHECKME>
+        </datatype>
     </datatypes>
+<references>
+    <reference ID="OpenAIRE_ResearchGraphDataModel_1.3">
+        <name>Open AIRE Research Graph Data Model 1.3</name>
+        <citation key="Manghi et alt. 2019">Manghi, Paolo, Bardi, Alessia, Atzori, Claudio, Baglioni, Miriam, Manola, Natalia, Schirrwagen, Jochen, &amp; Principe, Pedro. (2019). The OpenAIRE Research Graph Data Model (1.3). Zenodo. <ref uri="https://doi.org/10.5281/zenodo.2643199">https://doi.org/10.5281/zenodo.2643199</ref></citation>
+    </reference>
+    <reference ID="OpenAIRELOD_Ontology_1.1">
+        <name>OpenAIRE LOD Ontology 1.1</name>
+        <citation key="openAireLOD 1.1">ATHENA RC, UBONN: OpenAIRE LOD Ontology 1.1 (2021-02-20). <ref uri="http://lod.openaire.eu/vocab">http://lod.openaire.eu/vocab</ref>.</citation>
+    </reference>
+    <reference ID="ARCHEOntology_3.1">
+        <name>ACDH-CH ARCHE Ontology 3.1</name>
+        <citation key="Trognitz et alt. 2022">Trogniz, Martina, Zoltak, Matteusz, Carloni, Massimiliano, Czeitschner, Ulrike: ACDH-CH ARCHE Ontology. Version 3.1<ref uri="https://github.com/acdh-oeaw/arche-schema/releases/tag/v3.1">https://github.com/acdh-oeaw/arche-schema/releases/tag/v3.1</ref></citation>
+    </reference>
+</references>    
 </model>
