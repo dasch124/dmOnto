@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-model href="/home/dschopper/repo/modeller/model.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <model xmlns:xi="http://www.w3.org/2001/XInclude">
     <meta>
         <title>Resource Inventory Model</title>
@@ -35,7 +34,7 @@
                 <property ID="role">
                     <arity>1</arity>
                     <name>role</name>
-                    <datatypeRef target="term" vocabRef="vocabs.contributorRoles"/>
+                    <datatypeName target="term" vocabRef="vocabs.contributorRoles"/>
                 </property>
             </properties>
         </class>-->
@@ -50,7 +49,7 @@
                 <property ID="resource.name">
                     <arity>1</arity>
                     <name>Name</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                     <mapping targetLanguage="OpenAIRELOD_Ontology_1.1">
                         <className uri="">oav:title</className>
                     </mapping>
@@ -58,40 +57,40 @@
                 <property ID="resource.description">
                     <arity>1</arity>
                     <name>Description</name>
-                    <datatypeRef target="longText"/>
+                    <datatypeName target="longText"/>
                 </property>
                 <property ID="resource.pid">
                     <arity>0-n</arity>
                     <name>PID</name>
-                    <datatypeRef target="uri"/>
+                    <datatypeName target="uri"/>
                     <note>Any kind of persistent identifier</note>
                 </property>
                 <property ID="resource.status">
                     <arity>1</arity>
                     <name>Status</name>
-                    <datatypeRef target="term" vocabRef="vocabs.resourceStatus"/>
+                    <datatypeName target="term" vocabRef="vocabs.resourceStatus"/>
                 </property>
                 <property ID="resource.type">
                     <arity>1-n</arity>
                     <name>Type</name>
-                    <datatypeRef target="term" vocabRef="vocabs.resourceTypes"/>
+                    <datatypeName target="term" vocabRef="vocabs.resourceTypes"/>
                 </property>
                 <property ID="resource.accessRestrictions">
                     <arity>1</arity>
                     <name>Access Restrictions</name>
-                    <datatypeRef target="term" vocabRef="vocabs.accessRestrictions"/>
+                    <datatypeName target="term" vocabRef="vocabs.accessRestrictions"/>
                     <note>This property is global to all "incarnations" of a resource.</note>
                 </property>
                 <property ID="resource.license">
                     <arity>1</arity>
                     <name>License</name>
-                    <datatypeRef target="term" vocabRef="vocabs.licenses"/>
+                    <datatypeName target="term" vocabRef="vocabs.licenses"/>
                     <note>This property is the global default to all "incarnations" associated with that resource. In case a resource instance is licensed under different conditions, then it should have its own <propName target="resourceInstance.license">property</propName>.</note>
                 </property>
                 <property ID="resource.subject">
                     <arity>0-n</arity>
                     <name>Subject</name>
-                    <datatypeRef target="term" vocabRef="vocabs.archeSubjects"/>
+                    <datatypeName target="term" vocabRef="vocabs.archeSubjects"/>
                 </property>
             </properties>
             <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
@@ -125,18 +124,18 @@
                 <property ID="format.mimetype">
                     <arity>0-n</arity>
                     <name>Mime Type</name>
-                    <datatypeRef target="term" vocabRef="vocabs.mimetypes"/>
+                    <datatypeName target="term" vocabRef="vocabs.mimetypes"/>
                 </property>
                 <property ID="format.pronomID">
                     <arity>0-1</arity>
                     <name>PRONOM Unique Identifier</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                     <note>The unique identifier in the <ref uri="http://www.nationalarchives.gov.uk/pronom/">PRONOM database of file formats</ref>.</note>
                 </property>
                 <property ID="format.shortName">
                     <arity>1</arity>
                     <name>Name</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                     <note>A short denomination for the Format in question.</note>
                 </property>
             </properties>
@@ -151,7 +150,7 @@
                 <property ID="software.type">
                     <arity>1-n</arity>
                     <name></name>
-                    <datatypeRef target="term" vocabRef="software.type"/>
+                    <datatypeName target="term" vocabRef="vocabs.softwareType"/>
                     <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
                         <className>oav:SoftwareType</className>
                     </mapping>
@@ -171,12 +170,12 @@
                 <property ID="server.name">
                     <arity>1</arity>
                     <name>Server Name</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                 </property>
                 <property ID="server.ip">
                     <arity>0-n</arity>
                     <name>IP Address</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                 </property>
             </properties>
         </class>
@@ -191,19 +190,19 @@
                 <property ID="service.uri">
                     <arity>0-n</arity>
                     <name>URI</name>
-                    <datatypeRef target="uri"/>
+                    <datatypeName target="uri"/>
                     <note><p>One or more URIs under which the service is addressable. In case this is running on a Server, this should be mandatory.</p></note>
                 </property>
                 <property ID="service.status">
                     <arity>1</arity>
                     <name>Service Status</name>
-                    <datatypeRef target="term" vocabRef="vocabs.serviceStatus"/>
+                    <datatypeName target="term" vocabRef="vocabs.serviceStatus"/>
                     <note></note>
                 </property>
                 <property ID="service.accessRestrictions">
                     <arity>1</arity>
                     <name>Access Restrictions</name>
-                    <datatypeRef target="term" vocabRef="vocabs.accessRestrictions"/>
+                    <datatypeName target="term" vocabRef="vocabs.accessRestrictions"/>
                     <note>Defines who should have access to a resource as a whole or a specific manifestation of it as raw data or inside an application. Thus, this property occurs on several levels in the model which should be interpreted as a cascading rule: </note>
                 </property>
             </properties>
@@ -238,7 +237,7 @@
                 <property ID="project.externalIdentifier">
                     <arity>0-n</arity>
                     <name>external ID</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                 </property>
             </properties>
         </class>
@@ -249,7 +248,7 @@
                 <property ID="actor.name">
                     <arity>0-n</arity>
                     <name>Name</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                 </property>
             </properties>
             <mapping targetLanguage="OpenAIRELOD_Ontology_1.1">
@@ -263,12 +262,12 @@
                 <property ID="person.orcid">
                     <arity>1</arity>
                     <name>ORCID</name>
-                    <datatypeRef target="uri"/>
+                    <datatypeName target="uri"/>
                     <note>A URI from the https://orcid.org/ namespace</note>
                 </property>
             </properties>
             <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
-                <datatypeName>Person</datatypeName>
+                <className>oav:Person</className>
                 <note>The model in version 1.3 "Person" is a so-called "Structured Type"; a Core entity "Person" is listed under "future extensions to the data model"</note>
             </mapping>
         </class>
@@ -280,23 +279,23 @@
                 <property ID="metadata.name">
                     <arity>1</arity>
                     <name>Metadata name</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                 </property>
                 <property ID="metadata.location">
                     <arity>0-n</arity>
                     <name>Location</name>
-                    <datatypeRef target="uri"/>
+                    <datatypeName target="uri"/>
                 </property>
             </properties>
         </class>
         <class ID="Institution" parent="Actor">
-            <name>Institition</name>
+            <name>Institution</name>
             <definition>An institution, corporate body or organization of any size or legal type.</definition>
             <properties>
                 <property ID="institution.rorid">
                     <arity>1</arity>
                     <name>ROR ID</name>
-                    <datatypeRef target="uri"/>
+                    <datatypeName target="uri"/>
                     <note>A URI from the https://ror.org/ namespace</note>
                 </property>
             </properties>
@@ -310,6 +309,14 @@
         <class ID="ResourceInstance">
             <name>Resource Instance</name>
             <definition>A container object describing a materialized <className target="Resource">resource</className> which is made of one or several <className target="ResourceInstancePart">Resource Instance Parts</className> with actual data, representing the whole resource or only a fragment of it. In case of a publication resource, this might be one document file with embedded data (e.g. as PDF, EPUB) or a set of files making up a complete HTML website. in case of <className target="Software">software</className> this is a copy of the application code e.g. in a version control repository. In the case of a <className target="Dataset">data set</className> resource this might be one or several files on a network drive or one table in a RDBMS.</definition>
+           <note>
+                <p>A resourceInstance is </p>
+                <p>In case a resource instance is stored as flat files use <className>Resource</className> <relName target="instanceIsMadeUpOfResourceInstanceParts">is made up of (is part of)</relName> <className>Resource Instance Parts</className>.</p>
+                <p>In case a use <className>Resource</className> <relName target="serviceProvidesInstanceOfResource">is provided by (provides)</relName> <className>Service</className></p>
+                <p>If it is important to document the actual storage location of a resource instance even if it is accessed via a <className>Service</className>, use both. – E.g. in case of a http server, files are uploaded via SFTP to the local hard disk and served by the service ot the public.</p>
+                <p>If it is needed to express the inner logics of a <className>resource instance</className>, use <className target="Collection">Collections</className> which group together files into a logical structure (irrespective of the way / location they are stored).</p>
+            </note>
+            <CHECKME who="DS" when="2022-04-23" status="new">How about introducing an entity class "AccessPoint" or the like which allows to provide some explicit context to the different URLs etc via which a resource can be accessed? (e.g. internally used url, upload via SFTP etc.)</CHECKME>
             <examples>
                 <example><p>These would count for three distinct resource instances of the <instanceName classRef="Dataset">issue number 124 of the Wiener Zeitung from June 2nd, 1909</instanceName>:</p>
                     <list>
@@ -322,34 +329,26 @@
                 <property ID="resourceInstance.accessPoint">
                     <arity>1-n</arity>
                     <name>Resource Instance Access Point</name>
-                    <datatypeRef target="uri"/>
+                    <datatypeName target="uri"/>
                     <note>One or several URIs where a user can start accessing the actual data of the resource instance. In case of a resource instance organized in flat files, this might be a file:-scheme URI pointing to an index document or the directory containing the relevant files; in the case the resource instance is stored in some kind of database management system (RDBMS etc,) providing some kind of logical access path on top of the actual data storage layer, this might be a <ref uri="https://github.com/libwww-perl/uri-db">custom URI scheme</ref> pointing to a database or a query inside of it.</note>
                 </property>
                 <property ID="resourceInstance.license">
                     <arity>0-1</arity>
                     <name>Resource Instance License</name>
-                    <datatypeRef target="term" vocabRef="vocabs.licenses"/>
+                    <datatypeName target="term" vocabRef="vocabs.licenses"/>
                     <note>This is overriding the parent's resource <propName target="resourceInstance.license">license property</propName>.</note>
                 </property>
                 <property ID="resourceInstance.function">
                     <arity>1</arity>
                     <name>Type</name>
-                    <datatypeRef target="term" vocabRef="vocabs.instanceRoles"/>
+                    <datatypeName target="term" vocabRef="vocabs.instanceRoles"/>
                 </property>
                 <property ID="resourceInstance.completeness">
                     <arity>1</arity>
                     <name>Completness</name>
-                    <datatypeRef target="term" vocabRef="vocabs.resourceInstanceCompleteness"/>
+                    <datatypeName target="term" vocabRef="vocabs.resourceInstanceCompleteness"/>
                 </property>
             </properties>
-            <note>
-                <p>A resourceInstance is </p>
-                <p>In case a resource instance is stored as flat files use <className>Resource</className> <relName target="instanceIsMadeUpOfResourceInstanceParts">is made up of (is part of)</relName> <className>Resource Instance Parts</className>.</p>
-                <p>In case a use <className>Resource</className> <relName target="serviceProvidesInstanceOfResource">is provided by (provides)</relName> <className>Service</className></p>
-                <p>If it is important to document the actual storage location of a resource instance even if it is accessed via a <className>Service</className>, use both. – E.g. in case of a http server, files are uploaded via SFTP to the local hard disk and served by the service ot the public.</p>
-                <p>If it is needed to express the inner logics of a <className>resource instance</className>, use <className target="Collection">Collections</className> which group together files into a logical structure (irrespective of the way / location they are stored).</p>
-            </note>
-            <CHECKME who="DS" when="2022-04-23" status="new">How about introducing an entity class "AccessPoint" or the like which allows to provide some explicit context to the different URLs etc via which a resource can be accessed? (e.g. internally used url, upload via SFTP etc.)</CHECKME>
             <mapping targetLanguage="ARCHEOntology_3.1" version="3.1">
                 <className>arche:Colletion</className>
             </mapping>
@@ -368,12 +367,12 @@
                 <property ID="carrier.name">
                     <arity>1</arity>
                     <name>Carrier name</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                 </property>
                 <property ID="carrier.type">
                     <arity>1</arity>
                     <name>Carrier Type</name>
-                    <datatypeRef target="term" vocabRef="vocabs.carrierTypes"/>
+                    <datatypeName target="term" vocabRef="vocabs.carrierTypes"/>
                 </property>
             </properties>
         </class>
@@ -391,13 +390,13 @@
                 <property ID="ResourceInstancePart.location">
                     <arity>0-1</arity>
                     <name>location</name>
-                    <datatypeRef target="uri"/>
+                    <datatypeName target="uri"/>
                     <note>the path to the resource part (e.g. file system path); see comment on <propName target="resourceInstance.accessPoint">accessPoint</propName> property of <className target="ResourceInstance">Resource Instance</className>.</note>
                 </property>
                 <property ID="resourceInstancePart.extent">
                     <arity>0-n</arity>
                     <name>extent</name>
-                    <datatypeRef target="dimension"/>
+                    <datatypeName target="dimension"/>
                 </property>
             </properties>
             <!--<mapping targetLanguage="LRMoo" version="0.7">
@@ -409,6 +408,11 @@
         <class ID="Process">
             <name>Process</name>
             <definition>This class comprises any planned or actual activity which changes the state of a <className target="ResourceInstancePart">resource instance</className> or some of its parts, usually taking some input and transforming it to a output. Thus class comprises both the abstract notion of a process plan (heuristics, algorithms, instructions etc.) as well as their actual execution by an <className target="Actor">Actor</className>.</definition>
+            <note>
+                <p>It is up to the user to decide to which granularity she wants to model the internals of a proces. Usually, a process will be something simple like "running script x" without providing information on its internal structure.</p>
+            </note>
+            <TODO who="DS" when="2022-04-22" status="new">Add concrete usage guidelines and examples.</TODO>
+            <CHECKME who="DS" when="2022-04-22" status="new">this is very vague, but probably nothing more specific is needed in the context of this model</CHECKME>
             <examples>
                 <example>Encoding a handwritten letter in TEI-XML.</example>
                 <example>Processing the source data of this model with a script which produces a HTML view of it.</example>
@@ -419,24 +423,19 @@
                 <property ID="process.name">
                     <arity>1</arity>
                     <name>Name</name>
-                    <datatypeRef target="shortText"/>
+                    <datatypeName target="shortText"/>
                 </property>
                 <property ID="process.executionType">
                     <arity>0-1</arity>
                     <name>Execution type</name>
-                    <datatypeRef target="term" vocabRef="vocabs.processExecutionTypes"/>
+                    <datatypeName target="term" vocabRef="vocabs.processExecutionTypes"/>
                 </property>
                 <property ID="process.activityType">
                     <arity>0-n</arity>
                     <name>Activity Type</name>
-                    <datatypeRef target="term" vocabRef="vocabs.tadirahActivities"/>
+                    <datatypeName target="term" vocabRef="vocabs.tadirahActivities"/>
                 </property>
             </properties>
-            <note>
-                <p>It is up to the user to decide to which granularity she wants to model the internals of a proces. Usually, a process will be something simple like "running script x" without providing information on its internal structure.</p>
-            </note>
-            <TODO who="DS" when="2022-04-22" status="new">Add concrete usage guidelines and examples.</TODO>
-            <CHECKME who="DS" when="2022-04-22" status="new">this is very vague, but probably nothing more specific is needed in the context of this model</CHECKME>
         </class>
         
     </classes>
@@ -510,7 +509,7 @@
                 <property ID="personIsAssociatedWithResource.role">
                     <arity>0-n</arity>
                     <name>contribution role</name>
-                    <datatypeRef target="term" vocabRef="vocabs.contributorRoles"/>
+                    <datatypeName target="term" vocabRef="vocabs.contributorRoles"/>
                 </property>
             </properties>
         </relation>
@@ -540,7 +539,7 @@
             <reverseName>is output of</reverseName>
         </relation>
         
-        <relation ID="projectReusesResource" status="under_review">
+        <relation ID="projectReusesResource" status="needs_review">
             <sourceClass target="Project">
                 <arity>1-n</arity>
             </sourceClass>
@@ -567,7 +566,7 @@
                 <property ID="resourceReusesResource.description">
                     <arity>0-1</arity>
                     <name>Resource Re-use Description</name>
-                    <datatypeRef target="longText"/>
+                    <datatypeName target="longText"/>
                     <note>provides details on the re-use.</note>
                 </property>
             </properties>
@@ -582,12 +581,12 @@
             </targetClass>
             <name>is related to with role</name>
             <reverseName>is related to with role</reverseName>
-            <note>This is a general relation between two resource instances indicating that both resources are related in some way which is expressed via the <propName>resourceRelatesToResource.role</propName> property. It is deliberately kept on the Resource level to allow to model cross-class re-use relations between its subclasses (e.g. publication re-uses a dataset, a dataset re-uses a software etc.).</note>
+            <note>This is a general relation between two resource instances indicating that both resources are related in some way which is expressed via the <propName target="resourceRelatesToResource.role"/> property. It is deliberately kept on the Resource level to allow to model cross-class re-use relations between its subclasses (e.g. publication re-uses a dataset, a dataset re-uses a software etc.).</note>
             <properties>
                 <property ID="resourceRelatesToResource.role">
                     <arity>0-1</arity>
                     <name></name>
-                    <datatypeRef target="longText"/>
+                    <datatypeName target="longText"/>
                     <note>provides details on the re-use.</note>
                 </property>
             </properties>
@@ -596,7 +595,6 @@
         
         
        <!--
-            
         <relation ID="actorHasMadeContribution">
             <sourceClass target="Actor">
                 <arity>1-n</arity>
@@ -644,7 +642,7 @@
                 <property ID="projectHasMember.role">
                     <arity>1-n</arity>
                     <name>role</name>
-                    <datatypeRef target="term" vocabRef="vocabs.projectRoles"/>
+                    <datatypeName target="term" vocabRef="vocabs.projectRoles"/>
                 </property>
             </properties>
         </relation>
@@ -882,9 +880,8 @@
             <targetClass target="Institution">
                 <arity>1-n</arity>
             </targetClass>
-            <name>is collection of</name>
-            <reverseName>has collection</reverseName>
-            <note>Institution can have further defined parts (institutes, etc.); mostly we use this to model library Collections via <propName target="institution.type">the type property</propName> of the collection-institution.</note>
+            <name>is part of</name>
+            <reverseName>has part</reverseName>
         </relation>
         
         <relation ID="actorExecutesProcess">
@@ -1008,7 +1005,7 @@
                 <note>This property undocumented in the ontology but de facto exists in the OpenAIRE triple store where it is a string datatype property.</note>
             </mapping>
             <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3">
-                <datatypeName>Creator</datatypeName>
+                <className>Creator</className>
                 <note>"The Creator types describes a Person that is the creator of a Result and has a specific ranking, in order of importance."</note>
             </mapping>
         </relation>
