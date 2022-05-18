@@ -135,15 +135,6 @@
             </list>
         </values>
     </vocab>
-    <vocab ID="vocabs.resourceTypes">
-        <name>Resource Types Vocabulary</name>
-        <values>
-            <list>
-                <item></item>
-            </list>
-        </values>
-        <note>The type of a resource.</note>
-    </vocab>
     <vocab ID="vocabs.contributorRoles">
         <name>Vontributor Role Vocabulary</name>
         <note><p>Values should be taken from <ref uri="https://www.loc.gov/marc/relators/relaterm.html">MARC Code List for Relators</ref>.</p></note>

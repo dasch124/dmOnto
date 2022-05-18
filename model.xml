@@ -12,6 +12,7 @@
         <changelog>
             <change status="draft" when="2022-04-13" who="DS"/>
     	    <change status="draft" when="2022-04-24" who="DS">finishing major rework. The list of classes should be rather stable for the first review round. Bumping version number to 0.2</change>
+    	    <change status="draft" when="2022-05-18" who="DS">removing dedicated metadata class</change>
         </changelog>
         <audience>INTERNAL</audience>
         <namespaces>
@@ -69,11 +70,6 @@
                     <arity>1</arity>
                     <name>Status</name>
                     <datatypeName target="term" vocabRef="vocabs.resourceStatus"/>
-                </property>
-                <property ID="resource.type">
-                    <arity>1-n</arity>
-                    <name>Type</name>
-                    <datatypeName target="term" vocabRef="vocabs.resourceTypes"/>
                 </property>
                 <property ID="resource.accessRestrictions">
                     <arity>1</arity>
@@ -149,7 +145,7 @@
             <properties>
                 <property ID="software.type">
                     <arity>1-n</arity>
-                    <name></name>
+                    <name>Type</name>
                     <datatypeName target="term" vocabRef="vocabs.softwareType"/>
                     <mapping targetLanguage="OpenAIRE_ResearchGraphDataModel_1.3" version="1.3">
                         <className>oav:SoftwareType</className>
@@ -205,6 +201,12 @@
                     <datatypeName target="term" vocabRef="vocabs.accessRestrictions"/>
                     <note>Defines who should have access to a resource as a whole or a specific manifestation of it as raw data or inside an application. Thus, this property occurs on several levels in the model which should be interpreted as a cascading rule: </note>
                 </property>
+                <property ID="service.eol">
+                    <arity>1</arity>
+                    <name>End of life</name>
+                    <datatypeName target="date"/>
+                    <note>The date where the service is expected to be outphased.</note>
+                </property>
             </properties>
         </class>
         
@@ -231,15 +233,24 @@
         <class ID="Project">
             <name>Project</name>
             <definition>
-                <p>A research project</p>
+                <p>A research or software project.</p>
             </definition>
+            <note>This be equivalent to the Project entity class in the ARCHE ontology.</note>
             <properties>
+                <property ID="project.name">
+                    <arity>1</arity>
+                    <name>Name</name>
+                    <datatypeName target="shortText"/>
+                </property>
                 <property ID="project.externalIdentifier">
                     <arity>0-n</arity>
                     <name>external ID</name>
                     <datatypeName target="shortText"/>
                 </property>
             </properties>
+            <mapping targetLanguage="ARCHEOntology_3.1">
+                <className>arche:Project</className>
+            </mapping>
         </class>
         <class ID="Actor" type="abstract">
             <name>Actor</name>
@@ -272,22 +283,7 @@
             </mapping>
         </class>
         
-        <class ID="Metadata" parent="ResourceInstancePart">
-            <name>Metadata</name>
-            <definition>An external metadata record of the resource in question.</definition>
-            <properties>
-                <property ID="metadata.name">
-                    <arity>1</arity>
-                    <name>Metadata name</name>
-                    <datatypeName target="shortText"/>
-                </property>
-                <property ID="metadata.location">
-                    <arity>0-n</arity>
-                    <name>Location</name>
-                    <datatypeName target="uri"/>
-                </property>
-            </properties>
-        </class>
+        
         <class ID="Institution" parent="Actor">
             <name>Institution</name>
             <definition>An institution, corporate body or organization of any size or legal type.</definition>
@@ -1014,7 +1010,7 @@
             <sourceClass target="Resource">
                 <arity>1</arity>
             </sourceClass>
-            <targetClass target="Metadata">
+            <targetClass target="ResourceInstancePart">
                 <arity>0-n</arity>
             </targetClass>
             <name>is described in</name>
@@ -1079,6 +1075,10 @@
         <datatype ID="term">
             <name>Vocab Term</name>
             <note>A term from a controlled vocabulary.</note>
+        </datatype>
+        <datatype ID="date">
+            <name>Date</name>
+            <note>a iso date</note>
         </datatype>
         <datatype ID="uri">
             <name>URI</name>
